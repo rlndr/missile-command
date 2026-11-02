@@ -36,6 +36,16 @@ From the project root directory:
 python3 main.py
 ```
 
+## Running tests
+
+The test suite uses `pytest`, which is a dev-only dependency (the game itself only needs Pygame). Tests run headless; from the project root:
+
+```bash
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy uv run -q --no-project --python 3.13 --with pygame --with pytest python -m pytest -q
+```
+
+Or, with `pygame` and `pytest` installed in your environment, `python -m pytest -q` (`tests/conftest.py` sets the SDL dummy drivers itself). Tests never write the real `config.json`.
+
 ## Controls
 
 | Input | Action |

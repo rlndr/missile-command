@@ -1,5 +1,6 @@
 """Main game class - orchestrates all systems."""
 
+import math
 import pygame
 import random
 from game.constants import *
@@ -153,8 +154,22 @@ class MainGame:
         for explosion in self.explosions:
             explosion.update(dt)
 
-        self.shake_intensity = max(0, self.shake_intensity - dt * 2)
+        self.shake_intensity = max(0, self.shake_intensity - dt * SCREEN_SHAKE_DECAY_RATE)
     
+    def get_shake_offset(self):
+        """Return a random (shake_x, shake_y) offset for the current shake.
+
+        ``shake_intensity`` decays as a float, so the range bound is rounded up
+        with ``math.ceil`` to an int before it reaches ``random.randint``. Each
+        component is an int in ``[-A, A]`` where ``A = ceil(shake_intensity)``;
+        returns ``(0, 0)`` when there is no shake.
+        """
+        if self.shake_intensity <= 0:
+            return (0, 0)
+        amplitude = math.ceil(self.shake_intensity)
+        return (random.randint(-amplitude, amplitude),
+                random.randint(-amplitude, amplitude))
+
     def draw(self):
         """Render the game frame."""
         
@@ -163,8 +178,7 @@ class MainGame:
             color = (COLOR_BLUE[0], intensity, COLOR_BLUE[2])
             pygame.draw.line(self.screen, color, (0, y), (SCREEN_WIDTH, y))
         
-        shake_x = random.randint(-self.shake_intensity, self.shake_intensity) if self.shake_intensity > 0 else 0
-        shake_y = random.randint(-self.shake_intensity, self.shake_intensity) if self.shake_intensity > 0 else 0
+        shake_x, shake_y = self.get_shake_offset()
         
         self.base.draw_base(self.screen)
         
@@ -214,7 +228,7 @@ class MainGame:
                         self.explosions.append(explosion)
                         building.take_damage(building.damage_threshold * 25)
                         missile.destroy()
-                        self.shake_intensity = 5
+                        self.shake_intensity = SCREEN_SHAKE_BUILDING_HIT
         
         # Check defense missiles hitting incoming missiles
         for missile in self.defense_missiles:
@@ -238,7 +252,7 @@ class MainGame:
                     self.explosions.append(explosion)
                     missile.destroy()
                     incoming.destroy()
-                    self.shake_intensity = 8
+                    self.shake_intensity = SCREEN_SHAKE_INTERCEPT
         
         # Check building vs explosion collisions
         for building in self.buildings:
