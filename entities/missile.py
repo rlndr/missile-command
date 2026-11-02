@@ -28,47 +28,37 @@ class IncomingMissile(GameEntity):
             self.destroy()
 
 class DefenseMissile(GameEntity):
-    """Player-controlled defensive missile with curved trajectory."""
-    
+    """Player-controlled defensive missile.
+
+    Flies in a straight line from the launcher to the clicked target at a
+    constant speed, stops exactly on the target and sets ``reached_target``
+    so the game can detonate it there.
+    """
+
     def __init__(self, target_point):
         super().__init__(LAUNCHER_X_OFFSET, LAUNCHER_Y_OFFSET)
         self.target = pygame.math.Vector2(target_point.x, target_point.y)
         self.speed = DEFENSE_MISSILE_SPEED
         self.radius = 5
+        self.reached_target = False
 
-        dx = self.target.x - self.position.x
-        dy = self.target.y - self.position.y
-        distance = (dx**2 + dy**2) ** 0.5
-
-        if distance > 0:
-            direction = pygame.math.Vector2(dx, dy).normalize()
+        # Velocity is fixed for the whole flight. A zero-length shot (target
+        # on the launcher) gets zero velocity instead of normalising a zero
+        # vector, which pygame rejects; update() then arrives at once.
+        offset = self.target - self.position
+        if offset.length_squared() > 0:
+            self.velocity = offset.normalize() * self.speed
         else:
-            direction = pygame.math.Vector2(0, 1)
+            self.velocity = pygame.math.Vector2(0, 0)
 
-        self.velocity = direction * self.speed
-    
     def update(self, dt):
-        """Update missile position and trajectory."""
-        super().apply_velocity(dt)
-        
-        # Calculate new target point ahead of current position (for turning)
-        lookahead_distance = 20
-        # Use current velocity direction for lookahead
-        if self.velocity.x > 0:
-            direction_of_flight_sign = 1
+        """Step toward the target, snapping onto it when this step would reach it."""
+        if self.reached_target or self.is_destroyed:
+            return
+
+        remaining = self.target.distance_to(self.position)
+        if remaining <= self.speed * dt:
+            self.position = pygame.math.Vector2(self.target)
+            self.reached_target = True
         else:
-            direction_of_flight_sign = -1
-        
-        new_target = pygame.math.Vector2(
-            self.position.x + direction_of_flight_sign * lookahead_distance,
-            self.target.y
-        )
-        
-        # Recalculate direction based on new target
-        direction_to_target = (new_target - self.position).normalize()
-        
-        # Smoothly interpolate velocity toward new direction
-        desired_velocity = direction_to_target * self.speed
-        self.velocity = self.velocity.lerp(desired_velocity, 0.1)
-
-
+            super().apply_velocity(dt)

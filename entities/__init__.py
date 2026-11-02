@@ -27,7 +27,8 @@ class GameEntity:
 
 
 from .missile import IncomingMissile, DefenseMissile
-from .base import DefensiveBase, Explosion
+from .base import DefensiveBase
+from .terrain import Explosion
 from .building import Building
 
 

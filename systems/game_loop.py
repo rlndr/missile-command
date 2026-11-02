@@ -151,6 +151,14 @@ class MainGame:
         for missile in self.defense_missiles:
             missile.update(dt)
 
+        # Detonate defense missiles that reached their target this frame.
+        for missile in self.defense_missiles:
+            if missile.reached_target and not missile.is_destroyed:
+                explosion = self.explosion_pool.get_explosion(
+                    missile.target.x, missile.target.y, is_player=True)
+                self.explosions.append(explosion)
+                missile.destroy()
+
         for explosion in self.explosions:
             explosion.update(dt)
 
@@ -222,38 +230,26 @@ class MainGame:
                         # Building hit!
                         explosion = self.explosion_pool.get_explosion(
                             missile.position.x,
-                            missile.position.y,
-                            30
+                            missile.position.y
                         )
                         self.explosions.append(explosion)
                         building.take_damage(building.damage_threshold * 25)
                         missile.destroy()
                         self.shake_intensity = SCREEN_SHAKE_BUILDING_HIT
         
-        # Check defense missiles hitting incoming missiles
-        for missile in self.defense_missiles:
-            if missile.is_destroyed:
+        # Player explosions destroy incoming missiles inside their current radius
+        for explosion in self.explosions:
+            if not (explosion.is_active and explosion.is_player):
                 continue
-            
+
             for incoming in self.incoming_missiles:
                 if incoming.is_destroyed:
                     continue
-                
-                if (missile.position.x >= incoming.position.x and
-                    missile.position.x <= incoming.position.x + 16 and
-                    missile.position.y >= incoming.position.y and
-                    missile.position.y <= incoming.position.y + 16):
-                    
-                    explosion = self.explosion_pool.get_explosion(
-                        missile.position.x,
-                        missile.position.y,
-                        50
-                    )
-                    self.explosions.append(explosion)
-                    missile.destroy()
+
+                if explosion.position.distance_to(incoming.position) <= explosion.radius:
                     incoming.destroy()
                     self.shake_intensity = SCREEN_SHAKE_INTERCEPT
-        
+
         # Check building vs explosion collisions
         for building in self.buildings:
             if building.is_destroyed:
