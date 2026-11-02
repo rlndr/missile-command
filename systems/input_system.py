@@ -25,10 +25,10 @@ class InputSystem:
                 self.key_released[event.key] = False
                 
                 if event.key == pygame.K_ESCAPE:
-                    actions["pause"] = True
+                    actions["toggle_pause"] = True
                 
                 elif event.key == pygame.K_SPACE:
-                    actions["start_pause"] = True
+                    actions["start"] = True
             
             elif event.type == pygame.KEYUP:
                 self.key_released[event.key] = True

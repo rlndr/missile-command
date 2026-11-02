@@ -65,7 +65,8 @@ class MainGame:
         
         # Reset and track score at game start
         self.score_system.reset()
-        self.last_spawn_time = pygame.time.get_ticks() / 1000.0
+        self.last_spawn_time = 0.0
+        self.shake_intensity = 0
     
     def switch_state(self, new_state):
         """Switch to a different game state."""
@@ -75,6 +76,29 @@ class MainGame:
     def handle_events(self):
         """Process input events and return actions."""
         return self.input_system.handle_events()
+
+    def handle_actions(self, actions):
+        """Apply one frame's input ``actions`` (from ``handle_events()``).
+
+        The transition is chosen from the state at the start of the call, so
+        at most one state change happens per call. Every entry to
+        ``STATE_PLAYING`` resets the frame timer so the first frame back has
+        no time jump. Firing only works if play was running before and after.
+        """
+        state = self.state
+        if state in (STATE_START, STATE_GAME_OVER) and "start" in actions:
+            self.start_game()
+            self.state = STATE_PLAYING
+            self.timer.reset()
+        elif state == STATE_PLAYING and "toggle_pause" in actions:
+            self.state = STATE_PAUSED
+        elif state == STATE_PAUSED and "toggle_pause" in actions:
+            self.state = STATE_PLAYING
+            self.timer.reset()
+
+        if ("fire_missile" in actions and state == STATE_PLAYING
+                and self.state == STATE_PLAYING):
+            self.spawn_defense_missile(actions["fire_missile"])
     
     def spawn_incoming_missile(self):
         """Spawn an incoming missile from random top position toward a building."""
@@ -125,10 +149,9 @@ class MainGame:
         current_interval = max(MIN_SPAWN_INTERVAL,
                                BASE_SPAWN_INTERVAL / (self.game_time / 60.0 + 1.0))
 
-        current_time = pygame.time.get_ticks() / 1000.0
-        if current_time - self.last_spawn_time >= current_interval:
+        if self.game_time - self.last_spawn_time >= current_interval:
             self.spawn_incoming_missile()
-            self.last_spawn_time = current_time
+            self.last_spawn_time = self.game_time
 
         self.base.update(dt)
 
@@ -286,46 +309,16 @@ class MainGame:
         self.game_time += dt
     
     def start_game_loop(self):
-        """Start the main game loop."""
-        
-        self.state = STATE_PLAYING
-        self.start_game()
-        self.total_missile_hits_this_level = 0
-        
-        running = True
-        clock_delay = 0.16  # ~60 FPS target
-        
-        while running:
+        """Run the main loop in the current state until a ``"quit"`` action."""
+        clock_delay = 0.16  # Largest dt allowed for one frame
+
+        while True:
             actions = self.handle_events()
-            
             if "quit" in actions:
-                running = False
-            
-            elif "start_pause" in actions and self.state == STATE_PLAYING:
-                self.state = STATE_START
-                
-                for building in self.buildings:
-                    if not building.is_destroyed:
-                        self.buildings.remove(building)
-            
-            elif "resume" in actions:
-                self.state = STATE_PLAYING
-                self.total_missile_hits_this_level = 0
-            
-            elif "pause" in actions and self.state == STATE_PLAYING:
-                self.state = STATE_PAUSED
-            
-            elif "fire_missile" in actions:
-                self.spawn_defense_missile(actions["fire_missile"])
-            
-            # Check for restart after game over (spacebar press when in game over state)
-            if self.state == STATE_GAME_OVER and "start_pause" in actions:
-                # Restart the game with fresh buildings and reset score
-                self.start_game()
-                self.score_system.reset()
-                self.total_missile_hits_this_level = 0
-                self.last_spawn_time = pygame.time.get_ticks() / 1000.0
-            
+                break
+
+            self.handle_actions(actions)
+
             if self.state == STATE_PLAYING:
                 dt = min(self.timer.get_delta_time(), clock_delay)
                 self.update(dt)
@@ -338,6 +331,35 @@ class MainGame:
             self.clock.tick(60)
 
     
+    def menu_lines(self):
+        """Return the start or pause screen text as ``(text, font_size, color, centre_y)``.
+
+        Lines are listed top to bottom. Other states return an empty list.
+        """
+        mid = SCREEN_HEIGHT // 2
+        if self.state == STATE_START:
+            header = [
+                ("Missile Command Clone", 48, COLOR_WHITE, mid - 120),
+                ("Defend the city!", 36, COLOR_GRAY, mid - 80),
+                (f"High Score: {self.score_system.high_score:,}", 36, COLOR_YELLOW, mid - 30),
+            ]
+            prompt = "Press SPACE to Start"
+        elif self.state == STATE_PAUSED:
+            header = [
+                ("PAUSED", 48, COLOR_WHITE, mid - 120),
+                (f"Score: {self.score_system.score:,}", 36, COLOR_YELLOW, mid - 30),
+            ]
+            prompt = "Press ESC to Resume"
+        else:
+            return []
+        controls = [
+            ("Controls:", 36, COLOR_WHITE, mid + 20),
+            ("Mouse Click: Launch defense missile", 36, COLOR_WHITE, mid + 50),
+            ("SPACE: Start / Restart", 36, COLOR_WHITE, mid + 80),
+            ("ESC: Pause / Resume", 36, COLOR_WHITE, mid + 110),
+        ]
+        return header + controls + [(prompt, 48, COLOR_YELLOW, mid + 190)]
+
     def draw_start_screen(self):
         """Draw the start/pause/game over screen."""
         self.screen.fill(COLOR_DARK_BLUE)
@@ -351,48 +373,13 @@ class MainGame:
         small_font = pygame.font.Font(None, 36)
         
         if self.state == STATE_START or self.state == STATE_PAUSED:
-            if self.state == STATE_START:
-                title = "Missile Command Clone"
-                subtitle = "Defend the city!"
-            else:  # PAUSED
-                title = "PAUSED"
-                subtitle = ""
-            
-            title_text = font.render(title, True, COLOR_WHITE)
-            rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 80))
-            self.screen.blit(title_text, rect)
-            
-            subtitle_text = small_font.render(subtitle, True, COLOR_GRAY)
-            if subtitle_text:
-                subrect = subtitle_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 30))
-                self.screen.blit(subtitle_text, subrect)
-            
-            controls = [
-                "Controls:",
-                f"Mouse Click: Launch defense missile",
-                "SPACE: Start/Pause game",
-                "ESC: Pause/Resume",
-            ]
-            
-            y_offset = SCREEN_HEIGHT // 2 + 50
-            for line in controls:
-                text = small_font.render(line, True, COLOR_WHITE)
-                rect = text.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
-                self.screen.blit(text, rect)
-                y_offset += 30
-            
-            score_info = font.render("Score", True, COLOR_YELLOW)
-            score_text = small_font.render(f"{self.score_system.score:,}", True, COLOR_WHITE)
-            score_rect = score_info.get_rect(center=(SCREEN_WIDTH // 2 - 80, SCREEN_HEIGHT // 2 - 40))
-            self.screen.blit(score_info, score_rect)
-            self.screen.blit(score_text, (score_rect.x + 120, score_rect.y))
-            
-            high_score = small_font.render("High Score", True, COLOR_GRAY)
-            score_value = small_font.render(str(self.score_system.high_score), True, COLOR_GRAY)
-            hsr = high_score.get_rect(center=(SCREEN_WIDTH // 2 - 80, SCREEN_HEIGHT // 2 + 50))
-            self.screen.blit(high_score, hsr)
-            self.screen.blit(score_value, (hsr.x + 120, hsr.y))
-        
+            fonts = {}
+            for text, size, color, centre_y in self.menu_lines():
+                if size not in fonts:
+                    fonts[size] = pygame.font.Font(None, size)
+                surf = fonts[size].render(text, True, color)
+                self.screen.blit(surf, surf.get_rect(center=(SCREEN_WIDTH // 2, centre_y)))
+
         elif self.state == STATE_GAME_OVER:
             title = font.render("GAME OVER", True, COLOR_RED)
             rect = title.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
