@@ -36,8 +36,8 @@ class ScoreSystem:
         A missing file counts as a stored high score of 0 and is created on a
         new high. Other keys in the JSON object are kept. A file that isn't a
         JSON object, or whose ``high_score`` isn't an int, is left untouched.
-        Never raises; the in-memory ``high_score`` is always updated to
-        ``max(high_score, score)``.
+        Never raises, even on hostile files (``1e999``, deep nesting); the
+        in-memory ``high_score`` is always updated to ``max(high_score, score)``.
         """
         self.high_score = max(self.high_score, self.score)
         try:
@@ -57,7 +57,7 @@ class ScoreSystem:
             data = json.dumps(config, indent=4)
             with open(CONFIG_PATH, 'w') as f:
                 f.write(data)
-        except (OSError, ValueError, TypeError):
+        except (OSError, ValueError, TypeError, OverflowError, RecursionError):
             pass
     
     def add_missile_hit(self, points=10):

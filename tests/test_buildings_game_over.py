@@ -283,6 +283,9 @@ def test_save_keeps_other_keys(monkeypatch, tmp_path):
     "{not json",
     "[1, 2]",
     '{"high_score": "abc"}',
+    '{"high_score": 1e999}',
+    '{"high_score": Infinity}',
+    pytest.param("[" * 200_000, id="deeply-nested"),
 ])
 def test_save_leaves_file_untouched(monkeypatch, tmp_path, contents):
     """Criteria 15b and 15c: a lower score or an unreadable file changes nothing."""
