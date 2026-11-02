@@ -21,6 +21,17 @@ class DefensiveBase(GameEntity):
         self.render_offset_x = -15
         self.render_offset_y = -20
     
+    def reset(self):
+        """Put the launcher in its ready state for a new game.
+
+        Clears the reload (``cooldown_time`` and ``cooldown_ratio`` to 0.0) and
+        brings the launcher back online. Position, size and render offsets are
+        left alone. Calling it again changes nothing.
+        """
+        self.cooldown_time = 0.0
+        self.cooldown_ratio = 0.0
+        self.is_active = True
+
     def can_fire(self):
         """Check if base can fire another missile."""
         return self.is_active and self.cooldown_time <= 0
