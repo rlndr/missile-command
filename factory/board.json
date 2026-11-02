@@ -57,6 +57,23 @@
       "builder": "builder-003-buildings-game-over",
       "note": "Approved by human",
       "updated": "2026-11-02T18:24:09Z"
+    },
+    {
+      "id": "004-game-states",
+      "title": "Start screen, ESC pause/resume, SPACE restart, game-time spawns",
+      "branch": "factory/004-game-states",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a05623db4c642cfda",
+      "note": "Auto-approved",
+      "updated": "2026-11-02T18:34:16Z"
     }
   ]
 }

@@ -25,7 +25,6 @@ worktree (`WT`), and the final round number N. You do not edit code.
 - A new dependency, or a change to the `config.json` format or how it's saved.
 - Files deleted or core modules (`systems/game_loop.py`, `entities/base.py`) restructured
   beyond what the spec asked for.
-- Diff over ~400 changed lines.
 - A reviewer passed with an unresolved **should** finding, or reviewers disagree.
 - You have real doubt. Escalating is cheap; a bad merge to main is not.
 
