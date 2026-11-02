@@ -13,7 +13,7 @@ import pygame
 import pytest
 
 import systems.score
-from entities import DefenseMissile, IncomingMissile
+from entities import IncomingMissile
 from game.constants import (
     DT_DEFAULT,
     SCREEN_SHAKE_BUILDING_HIT,
@@ -113,26 +113,30 @@ def test_shake_decays_to_zero_after_building_hit(main_game):
 
 
 def test_intercept_sets_shake_and_next_frame_draws(main_game):
-    """Criterion 7: an intercept sets intercept shake and the next frame survives."""
+    """Criterion 7: an intercept sets intercept shake and the next frame survives.
+
+    Since job 002 an intercept comes from a player explosion catching an
+    incoming missile inside its current radius, not from missile contact.
+    """
     random.seed(0)
     game = main_game
     game.incoming_missiles = []
     game.defense_missiles = []
 
-    incoming = IncomingMissile(pygame.math.Vector2(400, 300))
-    incoming.position = pygame.math.Vector2(400, 200)
-    game.incoming_missiles.append(incoming)
+    explosion = game.explosion_pool.get_explosion(400, 200, is_player=True)
+    explosion.update(0.25)
+    game.explosions = [explosion]
 
-    defence = DefenseMissile(pygame.math.Vector2(408, 208))
-    defence.position = pygame.math.Vector2(408, 208)
-    game.defense_missiles.append(defence)
+    incoming = IncomingMissile(pygame.math.Vector2(400, 300))
+    incoming.position = pygame.math.Vector2(408, 208)
+    game.incoming_missiles.append(incoming)
 
     game.check_collisions()
     assert incoming.is_destroyed is True
-    assert defence.is_destroyed is True
     assert game.shake_intensity == SCREEN_SHAKE_INTERCEPT
 
     game.update(DT_DEFAULT)
+    assert isinstance(game.shake_intensity, float)
     assert game.shake_intensity != int(game.shake_intensity)
     game.draw()
 
