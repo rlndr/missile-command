@@ -74,6 +74,23 @@
       "builder": "a05623db4c642cfda",
       "note": "Auto-approved",
       "updated": "2026-11-02T18:34:16Z"
+    },
+    {
+      "id": "005-harden-load-score",
+      "title": "Fall back to a high score of 0 when config.json is malformed",
+      "branch": "factory/005-harden-load-score",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a70d0c541b05e5561",
+      "note": "Auto-approved",
+      "updated": "2026-11-02T19:15:48Z"
     }
   ]
 }
