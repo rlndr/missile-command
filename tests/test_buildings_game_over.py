@@ -252,8 +252,9 @@ REAL_CONFIG_KEYS = {
 def _score_system(monkeypatch, path, score, contents=None):
     """Point ``CONFIG_PATH`` at missing ``path``, build a ScoreSystem, then write ``contents``.
 
-    The file is written after construction because ``load_high_score()`` is
-    not hardened yet (out of scope) and would raise on the malformed cases.
+    The file is written after construction so these tests exercise only
+    ``save_high_score()``; ``load_high_score()`` is covered by
+    ``tests/test_load_high_score.py``.
     """
     monkeypatch.setattr(systems.score, "CONFIG_PATH", str(path))
     score_system = ScoreSystem()
