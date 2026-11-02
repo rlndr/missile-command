@@ -35,7 +35,6 @@ class MainGame:
         self.explosions = []
         
         self.base = DefensiveBase()
-        self.base_cooldown = 0.0
         
         self.last_spawn_time = 0
         self.spawn_interval = BASE_SPAWN_INTERVAL
@@ -48,12 +47,13 @@ class MainGame:
         self.shake_intensity = 0
     
     def start_game(self):
-        """Initialize game entities at start."""
+        """Initialize game entities at start and ready the launcher to fire."""
         self.buildings = []
         self.incoming_missiles = []
         self.defense_missiles = []
         self.explosions = []
         self.game_time = 0.0
+        self.base.reset()
 
         # Spawn starting buildings along bottom edge
         for i in range(self.starting_buildings_count):
