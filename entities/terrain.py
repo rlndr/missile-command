@@ -5,49 +5,38 @@ from game.constants import *
 
 
 class Explosion:
-    """Explosion effect with expansion and decay phases."""
-    
-    def __init__(self, x, y, radius=0):
+    """Explosion effect that grows then shrinks over game time.
+
+    The radius grows from 0 to ``max_radius`` over
+    ``EXPLOSION_EXPANSION_TIME`` seconds, shrinks back to 0 over
+    ``EXPLOSION_SHRINK_TIME`` seconds, then the explosion goes inactive.
+    Age is accumulated from ``dt`` in ``elapsed``, so it follows game time.
+    ``is_player`` marks explosions from defense missiles, which destroy
+    incoming missiles.
+    """
+
+    def __init__(self, x, y, is_player=False):
         self.position = pygame.math.Vector2(x, y)
-        
-        # Start small and expand to max_radius
-        if radius > 0:
-            self.radius = radius
-            self.max_radius = EXPLOSION_MAX_RADIUS
-            self.expansion_time = EXPLOSION_EXPANSION_TIME
-            self.shrink_time = EXPLOSION_SHRINK_TIME
-            self.total_duration = self.expansion_time + self.shrink_time
-        else:
-            # Instant full explosion
-            self.radius = EXPLOSION_MAX_RADIUS
-            self.max_radius = EXPLOSION_MAX_RADIUS
-            self.expansion_time = 0
-            self.shrink_time = EXPLOSION_SHRINK_TIME
-            self.total_duration = self.shrink_time
-        
+        self.is_player = is_player
+        self.radius = 0
+        self.max_radius = EXPLOSION_MAX_RADIUS
+        self.elapsed = 0.0
         self.is_active = True
-        self.start_time = None
-    
+
     def update(self, dt):
-        """Update explosion (expand and decay)."""
+        """Advance the explosion by ``dt`` seconds and recompute its radius."""
         if not self.is_active:
             return
-        
-        if self.start_time is None:
-            self.start_time = pygame.time.get_ticks() / 1000.0  # Convert to seconds
-        
-        elapsed = (pygame.time.get_ticks() / 1000.0) - self.start_time
-        
-        if elapsed < self.expansion_time:
-            # Expansion phase
-            progress = min(1.0, elapsed / self.expansion_time)
-            self.radius = self.max_radius * progress
-        elif elapsed < self.total_duration:
-            # Decay/shrink phase
-            decay_progress = (elapsed - self.expansion_time) / self.shrink_time
-            self.radius = self.max_radius * (1.0 - decay_progress)
-        
-        if self.radius <= 0:
+
+        self.elapsed += dt
+
+        if self.elapsed < EXPLOSION_EXPANSION_TIME:
+            self.radius = self.max_radius * self.elapsed / EXPLOSION_EXPANSION_TIME
+        elif self.elapsed < EXPLOSION_EXPANSION_TIME + EXPLOSION_SHRINK_TIME:
+            shrink_progress = (self.elapsed - EXPLOSION_EXPANSION_TIME) / EXPLOSION_SHRINK_TIME
+            self.radius = self.max_radius * (1.0 - shrink_progress)
+        else:
+            self.radius = 0
             self.is_active = False
 
     def draw_explosion(self, screen):
@@ -86,21 +75,23 @@ class ExplosionPool:
             exp.is_active = False
             self.explosion_pool.append(exp)
     
-    def get_explosion(self, x, y, radius=0):
-        """Get a reusable explosion instance."""
+    def get_explosion(self, x, y, is_player=False):
+        """Get a fresh explosion at ``(x, y)``, reusing a pooled one if available.
+
+        Every per-use field is reset on a reused object so nothing carries
+        over from its previous life.
+        """
         if self.explosion_pool:
             exp = self.explosion_pool.pop()
             exp.position.update(x, y)
-            exp.radius = radius if radius > 0 else EXPLOSION_MAX_RADIUS
+            exp.is_player = is_player
+            exp.radius = 0
             exp.max_radius = EXPLOSION_MAX_RADIUS
-            exp.expansion_time = EXPLOSION_EXPANSION_TIME if radius > 0 else 0
-            exp.shrink_time = EXPLOSION_SHRINK_TIME
-            exp.total_duration = exp.expansion_time + exp.shrink_time
+            exp.elapsed = 0.0
             exp.is_active = True
-            exp.start_time = None
             return exp
-        return Explosion(x, y, radius)
-    
+        return Explosion(x, y, is_player)
+
     def return_explosion(self, explosion):
         """Return a used explosion to the pool."""
         explosion.is_active = False
