@@ -78,8 +78,9 @@ class MainGame:
     
     def spawn_incoming_missile(self):
         """Spawn an incoming missile from random top position toward a building."""
-        if self.buildings:
-            target_building = random.choice(self.buildings)
+        standing = [b for b in self.buildings if not b.is_destroyed]
+        if standing:
+            target_building = random.choice(standing)
             target_point = pygame.math.Vector2(target_building.position.x,
                            SCREEN_HEIGHT - 30 - random.randint(0, 50))
         else:
@@ -233,10 +234,11 @@ class MainGame:
                             missile.position.y
                         )
                         self.explosions.append(explosion)
-                        building.take_damage(building.damage_threshold * 25)
+                        building.take_impact()
                         missile.destroy()
                         self.shake_intensity = SCREEN_SHAKE_BUILDING_HIT
-        
+                        break
+
         # Player explosions destroy incoming missiles inside their current radius
         for explosion in self.explosions:
             if not (explosion.is_active and explosion.is_player):
@@ -250,22 +252,23 @@ class MainGame:
                     incoming.destroy()
                     self.shake_intensity = SCREEN_SHAKE_INTERCEPT
 
-        # Check building vs explosion collisions
-        for building in self.buildings:
-            if building.is_destroyed:
-                continue
-            
-            for explosion in list(self.explosions):
-                if not explosion.is_active:
-                    continue
-                
-                # Calculate actual distance from explosion center to building position
-                distance = (explosion.position - building.position).length()
-                
-                # Damage is highest at center, decreases with distance
-                damage = max(0, EXPLOSION_MAX_RADIUS - distance)
-                building.take_damage(min(damage * 25, building.damage_threshold * 15))
+        # Destroyed buildings drop out of the city.
+        self.buildings = [b for b in self.buildings if not b.is_destroyed]
 
+    @property
+    def buildings_left(self):
+        """Number of buildings in ``self.buildings`` that are not destroyed."""
+        return sum(1 for b in self.buildings if not b.is_destroyed)
+
+    def check_game_over(self):
+        """End the game and save the high score once when the last building falls.
+
+        Only acts while playing, so it switches to ``STATE_GAME_OVER`` and
+        calls ``save_high_score()`` exactly once per game.
+        """
+        if self.state == STATE_PLAYING and self.buildings_left == 0:
+            self.switch_state(STATE_GAME_OVER)
+            self.score_system.save_high_score()
 
     def handle_score_updates(self):
         """Update score from various sources."""
@@ -322,18 +325,13 @@ class MainGame:
                 self.score_system.reset()
                 self.total_missile_hits_this_level = 0
                 self.last_spawn_time = pygame.time.get_ticks() / 1000.0
-            elif self.state == STATE_GAME_OVER:
-                # Try to save high score at end of session
-                self.score_system.save_high_score()
             
             if self.state == STATE_PLAYING:
                 dt = min(self.timer.get_delta_time(), clock_delay)
                 self.update(dt)
                 self.check_collisions()
                 self.draw()
-
-                if not self.buildings and self.state != STATE_GAME_OVER:
-                    self.switch_state(STATE_GAME_OVER)
+                self.check_game_over()
             else:
                 self.draw_start_screen()
 
@@ -403,9 +401,13 @@ class MainGame:
             score_text = small_font.render(f"Final Score: {self.score_system.score:,}", True, COLOR_YELLOW)
             score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30))
             self.screen.blit(score_text, score_rect)
-            
+
+            high_text = small_font.render(f"High Score: {self.score_system.high_score:,}", True, COLOR_YELLOW)
+            high_rect = high_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 60))
+            self.screen.blit(high_text, high_rect)
+
             restart_text = font.render("Press SPACE to Restart", True, COLOR_WHITE)
-            restart_rect = restart_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 80))
+            restart_rect = restart_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 110))
             self.screen.blit(restart_text, restart_rect)
         
         pygame.display.flip()
