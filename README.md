@@ -50,10 +50,10 @@ Or, with `pygame` and `pytest` installed in your environment, `python -m pytest 
 
 | Input | Action |
 |-------|--------|
-| Left Click | Launch defensive missile toward cursor |
-| SPACE | Pause / Resume |
-| ESC | Pause |
-| SPACE (on Game Over screen) | Restart |
+| Left Click | Launch a defensive missile toward the cursor |
+| SPACE (start screen) | Start |
+| ESC | Pause / Resume |
+| SPACE (Game Over screen) | Restart |
 
 ## Gameplay
 
