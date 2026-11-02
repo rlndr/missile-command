@@ -1,3 +1,62 @@
 {
-  "jobs": []
+  "jobs": [
+    {
+      "id": "001-fix-shake-crash",
+      "title": "Fix screen-shake crash on building hit and add pytest harness",
+      "branch": "factory/001-fix-shake-crash",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "builder-001-fix-shake-crash",
+      "note": "",
+      "updated": "2026-11-02T17:14:24Z"
+    },
+    {
+      "id": "002-missiles-explode",
+      "title": "Defense missiles fly straight to the click and explode there",
+      "branch": "factory/002-missiles-explode",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "builder-002-missiles-explode",
+      "note": "Approved by human",
+      "updated": "2026-11-02T17:35:20Z"
+    },
+    {
+      "id": "003-buildings-game-over",
+      "title": "Only enemy hits damage buildings, and the game ends when the city falls",
+      "branch": "factory/003-buildings-game-over",
+      "stage": "merged",
+      "round": 2,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [
+        {
+          "security": "CHANGES",
+          "ux": "PASS",
+          "ui": "PASS",
+          "code": "PASS"
+        }
+      ],
+      "builder": "builder-003-buildings-game-over",
+      "note": "Approved by human",
+      "updated": "2026-11-02T18:24:09Z"
+    }
+  ]
 }

@@ -37,3 +37,7 @@ One or two sentences.
 1. **blocker|should|nit** `path:line` — problem → fix.
 ```
 Any blocker or should → CHANGES. Nits alone → PASS. No findings → say "None."
+
+**The file is the review.** The orchestrator only reads `review-security.md`; a verdict you
+only put in your final message is lost and the review is re-run. Write the file with the
+Write tool, then confirm it exists (`head -1` it) before you finish.

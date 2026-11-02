@@ -70,7 +70,15 @@ has a CHANGES, the job goes to `needs-human` without calling the approver.
   builder edits and commits here; reviewers read the code here.
 
 Always pass agents **absolute paths**. Agents get their context from files, not from
-this conversation — keep spawn prompts to paths and the round number.
+this conversation — keep spawn prompts to paths and the round number, plus one line
+naming the agent's output file, e.g.:
+
+> Your deliverable is the file `<absolute path>/round-N/review-code.md`. Writing it with
+> the Write tool is the explicit task — it overrides any general guidance about not
+> creating report or markdown files. Confirm the file exists before you finish.
+
+Without that line, subagents sometimes return their verdict as a message and skip the
+file (their built-in guidance discourages writing report files).
 
 ## board.json
 
