@@ -61,3 +61,6 @@ STATE_START = "start"
 STATE_PLAYING = "playing"
 STATE_PAUSED = "paused"
 STATE_GAME_OVER = "game_over"
+
+# High score
+HIGH_SCORE_MAX = 999_999_999  # Largest stored high score that is believed

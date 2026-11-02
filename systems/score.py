@@ -22,13 +22,26 @@ class ScoreSystem:
         self.high_score = self.load_high_score()
     
     def load_high_score(self):
-        """Load high score from config file."""
+        """Return the high score stored in ``CONFIG_PATH``, or 0 if it can't be believed.
+
+        The file must be a JSON object; its ``high_score`` value is converted
+        with ``int(...)``, as ``save_high_score()`` does, and kept only if it is
+        in ``0..HIGH_SCORE_MAX``. A missing, unreadable or unparseable file, a
+        non-object, a missing key, a failed conversion or an out-of-range value
+        all give 0. Read-only: the file is never written. Never raises, even on
+        hostile files (``1e999``, deep nesting, 4300+ digit integers).
+        """
         try:
             with open(CONFIG_PATH, 'r') as f:
                 config = json.load(f)
-                return int(config.get("high_score", 0))
-        except (FileNotFoundError, json.JSONDecodeError):
+            if not isinstance(config, dict):
+                return 0
+            high_score = int(config.get("high_score", 0))
+        except (OSError, ValueError, TypeError, OverflowError, RecursionError):
             return 0
+        if not 0 <= high_score <= HIGH_SCORE_MAX:
+            return 0
+        return high_score
     
     def save_high_score(self):
         """Persist ``score`` to ``CONFIG_PATH`` if it beats the stored high score.
