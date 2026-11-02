@@ -16,7 +16,7 @@ class ScoreSystem:
         self.score = 0
         self.buildings_destroyed = 0
         self.total_missiles_hit = 0
-        self.time_survived = 0
+        self.time_survived = 0.0
         
         # Load high score from config if exists
         self.high_score = self.load_high_score()
@@ -73,8 +73,8 @@ class ScoreSystem:
         except (OSError, ValueError, TypeError, OverflowError, RecursionError):
             pass
     
-    def add_missile_hit(self, points=10):
-        """Add points for missile hit."""
+    def add_missile_hit(self, points=MISSILE_INTERCEPT_POINTS):
+        """Add ``points`` for one intercepted enemy missile and count the hit."""
         self.score += points
         self.total_missiles_hit += 1
     
@@ -84,15 +84,24 @@ class ScoreSystem:
         self.buildings_destroyed += 1
     
     def add_survival_time(self, dt):
-        """Add survival time bonus (1 point per second)."""
-        self.score += int(dt * 1)
+        """Accumulate ``dt`` seconds survived and award points per whole second.
+
+        Fractional seconds carry over between calls: only the whole seconds
+        crossed by this call earn ``SURVIVAL_POINTS_PER_SECOND`` each. A
+        non-positive ``dt`` is ignored.
+        """
+        if dt <= 0:
+            return
+        before = int(self.time_survived)
+        self.time_survived += dt
+        self.score += (int(self.time_survived) - before) * SURVIVAL_POINTS_PER_SECOND
     
     def reset(self):
         """Reset all scores."""
         self.score = 0
         self.buildings_destroyed = 0
         self.total_missiles_hit = 0
-        self.time_survived = 0
+        self.time_survived = 0.0
     
 
 

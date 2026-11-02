@@ -57,6 +57,6 @@ Or, with `pygame` and `pytest` installed in your environment, `python -m pytest 
 
 ## Gameplay
 
-Your launcher sits in the top-left corner of the screen. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius.
+Your launcher sits in the top-left corner of the screen. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1.
 
 The game ends when all buildings are destroyed. Your final score and high score are displayed on the game over screen. Press SPACE to restart.
