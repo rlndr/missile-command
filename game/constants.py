@@ -62,5 +62,10 @@ STATE_PLAYING = "playing"
 STATE_PAUSED = "paused"
 STATE_GAME_OVER = "game_over"
 
+# Scoring
+MISSILE_INTERCEPT_POINTS = 10    # Points per enemy missile destroyed by a player explosion
+SURVIVAL_POINTS_PER_SECOND = 1   # Points per whole second survived in play
+HUD_MARGIN = 10                  # Gap in px between the HUD score and the top/right screen edges
+
 # High score
 HIGH_SCORE_MAX = 999_999_999  # Largest stored high score that is believed

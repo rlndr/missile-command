@@ -45,7 +45,6 @@ class MainGame:
         self.starting_buildings_count = 8
         
         self.game_time = 0.0
-        self.total_missile_hits_this_level = 0
         self.shake_intensity = 0
     
     def start_game(self):
@@ -202,6 +201,10 @@ class MainGame:
         return (random.randint(-amplitude, amplitude),
                 random.randint(-amplitude, amplitude))
 
+    def hud_score_text(self):
+        """Return the in-play HUD score line, e.g. ``"SCORE: 1,234"``."""
+        return f"SCORE: {self.score_system.score:,}"
+
     def draw(self):
         """Render the game frame."""
         
@@ -231,8 +234,9 @@ class MainGame:
                 explosion.draw_explosion(self.screen)
 
         font = pygame.font.Font(None, 36)
-        score_surf = font.render(f"SCORE: {self.score_system.score:,}", True, COLOR_YELLOW)
-        self.screen.blit(score_surf, (SCREEN_WIDTH - 220, 10))
+        score_surf = font.render(self.hud_score_text(), True, COLOR_YELLOW)
+        score_rect = score_surf.get_rect(topright=(SCREEN_WIDTH - HUD_MARGIN, HUD_MARGIN))
+        self.screen.blit(score_surf, score_rect)
 
         pygame.display.flip()
 
@@ -273,6 +277,7 @@ class MainGame:
 
                 if explosion.position.distance_to(incoming.position) <= explosion.radius:
                     incoming.destroy()
+                    self.score_system.add_missile_hit(MISSILE_INTERCEPT_POINTS)
                     self.shake_intensity = SCREEN_SHAKE_INTERCEPT
 
         # Destroyed buildings drop out of the city.
@@ -293,21 +298,6 @@ class MainGame:
             self.switch_state(STATE_GAME_OVER)
             self.score_system.save_high_score()
 
-    def handle_score_updates(self):
-        """Update score from various sources."""
-        
-        if self.total_missile_hits_this_level > 0:
-            self.score_system.add_missile_hit(10)
-        
-        dt = self.timer.get_delta_time()
-        self.score_system.add_survival_time(dt)
-        
-        if self.total_missile_hits_this_level == 0:
-            self.total_missile_hits_this_level = 1
-        
-        elapsed = pygame.time.get_ticks() / 1000.0 - self.last_spawn_time
-        self.game_time += dt
-    
     def start_game_loop(self):
         """Run the main loop in the current state until a ``"quit"`` action."""
         clock_delay = 0.16  # Largest dt allowed for one frame
