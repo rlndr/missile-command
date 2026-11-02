@@ -38,10 +38,10 @@ def _centre(building):
     return building.position + Vector2(building.width / 2, building.height / 2)
 
 
-def _impact(game, building):
-    """Park a stationary enemy missile at ``building``'s centre and resolve collisions."""
+def _impact(game, building, point=None):
+    """Park a stationary enemy missile at ``point`` (default: ``building``'s centre), then collide."""
     missile = IncomingMissile(Vector2(building.position))
-    missile.position = _centre(building)
+    missile.position = Vector2(point if point is not None else _centre(building))
     missile.velocity = Vector2(0, 0)
     game.incoming_missiles.append(missile)
     game.check_collisions()
@@ -141,11 +141,7 @@ def test_destroyed_buildings_leave_the_list(game):
     assert game.buildings_left == 7
 
     explosions_before = len(game.explosions)
-    stray = IncomingMissile(Vector2(old_centre))
-    stray.position = Vector2(old_centre)
-    stray.velocity = Vector2(0, 0)
-    game.incoming_missiles.append(stray)
-    game.check_collisions()
+    stray = _impact(game, b0, old_centre)
     assert stray.is_destroyed is False
     assert len(game.explosions) == explosions_before
 
