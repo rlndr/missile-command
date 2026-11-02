@@ -1,5 +1,6 @@
 """Building entities - destructible city structures."""
 
+import math
 import pygame
 from game.constants import *
 from . import GameEntity
@@ -39,7 +40,11 @@ class Building(GameEntity):
         if self.health_current <= 0:
             self.health_current = 0
             self.destroy()
-    
+
+    def take_impact(self):
+        """Apply one enemy missile impact; ``damage_threshold`` impacts destroy the building."""
+        self.take_damage(math.ceil(self.health_max / self.damage_threshold))
+
     def get_bounds(self):
         """Get rectangular bounds for collision detection."""
         return pygame.Rect(

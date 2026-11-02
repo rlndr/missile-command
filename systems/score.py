@@ -31,17 +31,33 @@ class ScoreSystem:
             return 0
     
     def save_high_score(self):
-        """Save current score to high score if it's a new high."""
+        """Persist ``score`` to ``CONFIG_PATH`` if it beats the stored high score.
+
+        A missing file counts as a stored high score of 0 and is created on a
+        new high. Other keys in the JSON object are kept. A file that isn't a
+        JSON object, or whose ``high_score`` isn't an int, is left untouched.
+        Never raises; the in-memory ``high_score`` is always updated to
+        ``max(high_score, score)``.
+        """
+        self.high_score = max(self.high_score, self.score)
         try:
-            with open(CONFIG_PATH, 'r') as f:
-                config = json.load(f)
-            
-            new_high = int(config.get("high_score", 0))
-            if self.score > new_high:
-                config["high_score"] = self.score
-                with open(CONFIG_PATH, 'w') as f:
-                    json.dump(config, f, indent=4)
-        except (FileNotFoundError, json.JSONDecodeError):
+            try:
+                with open(CONFIG_PATH, 'r') as f:
+                    config = json.load(f)
+            except FileNotFoundError:
+                config = {}
+
+            if not isinstance(config, dict):
+                return
+            if self.score <= int(config.get("high_score", 0)):
+                return
+
+            config["high_score"] = self.score
+            # Serialise before opening for write so a failure can't truncate the file.
+            data = json.dumps(config, indent=4)
+            with open(CONFIG_PATH, 'w') as f:
+                f.write(data)
+        except (OSError, ValueError, TypeError):
             pass
     
     def add_missile_hit(self, points=10):

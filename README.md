@@ -6,7 +6,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 
 - Click anywhere on screen to fire a defensive missile toward that point
 - Explosions chain-react and can intercept incoming missiles mid-flight
-- Buildings take damage and are destroyed by explosions
+- Buildings are damaged only by enemy missile impacts (3 hits destroy one); your own explosions never harm the city
 - Score tracks missile hits and survival time, with high score persistence
 - Difficulty ramps up continuously as the game progresses
 
