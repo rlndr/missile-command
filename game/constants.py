@@ -47,6 +47,11 @@ EXPLOSION_MAX_RADIUS = 80
 EXPLOSION_EXPANSION_TIME = 0.5
 EXPLOSION_SHRINK_TIME = 0.3
 
+# Screen shake
+SCREEN_SHAKE_BUILDING_HIT = 5    # Intensity when an incoming missile hits a building
+SCREEN_SHAKE_INTERCEPT = 8       # Intensity when a defence missile intercepts an incoming one
+SCREEN_SHAKE_DECAY_RATE = 2.0    # Intensity units lost per second
+
 # Launcher position (top-left corner)
 LAUNCHER_X_OFFSET = 20
 LAUNCHER_Y_OFFSET = 20
