@@ -91,6 +91,133 @@
       "builder": "a70d0c541b05e5561",
       "note": "Auto-approved",
       "updated": "2026-11-02T19:15:48Z"
+    },
+    {
+      "id": "006-scoring",
+      "title": "Points for intercepts, correct survival bonus, live HUD score",
+      "branch": "factory/006-scoring",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "aad7f7d3e95db00e3",
+      "note": "Auto-approved",
+      "updated": "2026-11-02T19:26:53Z"
+    },
+    {
+      "id": "007-reset-cooldown",
+      "title": "Launcher is ready to fire at the start of every game",
+      "branch": "factory/007-reset-cooldown",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a3dd666e360df2ed9",
+      "note": "Auto-approved",
+      "updated": "2026-11-02T19:34:37Z"
+    },
+    {
+      "id": "008-cooldown-indicator",
+      "title": "Reload bar under the launcher",
+      "branch": "factory/008-cooldown-indicator",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "ac15a44c25042caf7",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T01:37:21Z"
+    },
+    {
+      "id": "009-bottom-launcher",
+      "title": "Launcher tower at the bottom centre of the screen",
+      "branch": "factory/009-bottom-launcher",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "aab450347db00e584",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T01:54:38Z"
+    },
+    {
+      "id": "010-enemy-exhaust-trails",
+      "title": "Exhaust trails behind enemy missiles",
+      "branch": "factory/010-enemy-exhaust-trails",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a8c68b0a0727f4330",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T01:56:14Z"
+    },
+    {
+      "id": "011-collision-score-tests",
+      "title": "Unit tests for collision detection and score calculation",
+      "branch": "factory/011-collision-score-tests",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a4e7699de68039d8b",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T01:51:29Z"
+    },
+    {
+      "id": "012-retro-sound-effects",
+      "title": "Retro synthesised sound effects",
+      "branch": "factory/012-retro-sound-effects",
+      "stage": "merged",
+      "round": 2,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [
+        {
+          "security": "PASS",
+          "ux": "PASS",
+          "ui": "PASS",
+          "code": "PASS",
+          "human": "CHANGES"
+        }
+      ],
+      "builder": "a09a186222e862444",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T02:07:01Z"
     }
   ]
 }

@@ -1,0 +1,11 @@
+APPROVE
+
+**Reason:** Intercepts score 10 once each, survival adds up across frames, the HUD is right-aligned and live; 132 tests pass and the diff is in scope.
+
+## Rationale
+- **Gates:** build.md says `STATUS: READY`. All four round-1 reviews (code, security, ui, ux) say `VERDICT: PASS`. The only findings are two UX **nit**s, both about items the spec puts out of scope (+10 popups, no penalty for losing a building). There are no **should** findings and the reviewers agree.
+- **Criteria 1-14:** each one maps to a real assertion in `tests/test_scoring.py`, which I read. The intercept award is inside the `incoming.destroy()` branch, after the `is_destroyed` guard (criteria 1-4). `add_survival_time` matches the spec's formula exactly and ignores `dt <= 0` (criteria 5-7). `update()` still calls it exactly once (line 146). The HUD uses `get_rect(topright=(SCREEN_WIDTH - HUD_MARGIN, HUD_MARGIN))`. `get_ticks` and `handle_score_updates` are gone from `systems/game_loop.py`.
+- **Criterion 15:** I ran the suite myself from WT: `132 passed in 4.94s`. The real `config.json` sha256 is `bbf68775...caa4c` both before and after the run, and the worktree is clean.
+- **Criteria 16-17 (visual):** build.md gives the rendered text rects: (667, 10, 123, 24) for "SCORE: 11" and (554, 10, 236, 24) for "SCORE: 123,456,789". Both have a 10 px right and top margin. The UI reviewer separately rendered and viewed frames for score 1 and score 123456789. Criterion 16's frame shows no explosion because the blast expires before frame 61. That is expected, and the draw order is unchanged.
+- **Scope:** 5 files changed: README (one sentence), constants (a new `# Scoring` section), `game_loop.py`, `score.py`, and the new test file. The only deletions are the dead code the spec asked to remove. `ScoreDisplay`, `add_building_destroyed()`, `save_high_score()` and `load_high_score()` are untouched. There are no new dependencies and no change to the `config.json` format or how it's saved.
+- **Risk:** low. The diff is 302 insertions, slightly over the spec's "under 300" estimate because the tests are bigger. That is an estimate, not a trigger (the diff-size trigger was dropped in 4a43eef). Tests patch `CONFIG_PATH` through fixtures, and the `utils.timer.time` patch uses `monkeypatch`, so it is undone after each test.

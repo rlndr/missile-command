@@ -9,13 +9,13 @@
 - [x] Buildings and game over: only enemy missile impacts damage buildings (player explosions must not wreck the city), destroyed buildings stop counting, the game switches to GAME_OVER when no buildings are left (today destroyed buildings stay in the list, so it never ends), and the high score is saved once at game over → 003-buildings-game-over
 - [x] Game states: open on the start screen and begin play on SPACE, ESC toggles pause/resume (no input emits "resume" today), SPACE restarts from GAME_OVER, and remove the SPACE-during-play branch that deletes standing buildings. Enemy spawn timing uses game time so pausing doesn't cause a burst of spawns → 004-game-states
 - [x] Harden load_high_score() in systems/score.py: a malformed config.json ({"high_score": "abc"}, a top-level [], 1e999, an integer over 4300 digits) currently crashes the game at launch; fall back to a high score of 0 instead, matching how save_high_score() already handles bad files → 005-harden-load-score
-- [ ] Scoring: award points for each enemy missile destroyed by an explosion, and accumulate survival time correctly (add_survival_time truncates int(dt) to 0 every frame); the HUD score updates live during play
-- [ ] Reset the launcher cooldown when a game starts or restarts, so the first click of a new game always fires
+- [x] Scoring: award points for each enemy missile destroyed by an explosion, and accumulate survival time correctly (add_survival_time truncates int(dt) to 0 every frame); the HUD score updates live during play → 006-scoring
+- [x] Reset the launcher cooldown when a game starts or restarts, so the first click of a new game always fires → 007-reset-cooldown
 
 ## Later
 
-- [ ] Launcher cooldown indicator: draw a small bar under the launcher that fills as BASE_COOLDOWN_TIME elapses, so the player can see when they can fire again
-- [ ] Unit tests for collision detection and score calculation, as listed in GAME_DESIGN.md §13
+- [x] Launcher cooldown indicator: draw a small bar under the launcher that fills as BASE_COOLDOWN_TIME elapses, so the player can see when they can fire again → 008-cooldown-indicator
+- [x] Unit tests for collision detection and score calculation, as listed in GAME_DESIGN.md §13 → 011-collision-score-tests
 - [ ] Wave counter: every 30 seconds of play the wave number goes up and is shown in the HUD next to the score
 - [ ] Pause overlay: when paused, dim the screen and list the controls
 - [ ] Pause screen text: replace "SPACE: Start / Restart" (SPACE does nothing while paused) with the keys that work there, ESC to resume
