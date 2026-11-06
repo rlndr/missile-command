@@ -189,7 +189,10 @@ class MainGame:
 
     def update(self, dt):
         """Update all game entities."""
+        prev_wave = self.current_wave()
         self.game_time += dt
+        if self.current_wave() > prev_wave:
+            self.sound.play("tick_tock")
         self.base.set_rapid_fire(self.rapid_fire_active())
         self.score_system.add_survival_time(dt)
 

@@ -128,4 +128,5 @@ SOUND_GAME_OVER_SWEEP = (440, 55, 1.0)      # Start Hz, end Hz, seconds
 SOUND_EXPLOSION_NOISE = (4000, 0.5)         # Noise step Hz, seconds
 SOUND_IMPACT_NOISE = (1200, 0.35)           # Noise step Hz, seconds
 SOUND_LASER_SWEEP = (1800, 300, 0.08)       # Start Hz, end Hz, seconds (rapid-fire shot)
-SOUND_NAMES = ("launch", "explosion", "intercept", "impact", "game_over", "laser")
+SOUND_TICK_TOCK = (880, 660, 0.06, 0.04, 0.08)  # Tick Hz, tock Hz, tick s, gap s, tock s (wave change)
+SOUND_NAMES = ("launch", "explosion", "intercept", "impact", "game_over", "laser", "tick_tock")

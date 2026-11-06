@@ -17,6 +17,7 @@ _MIXER_ERRORS = (pygame.error, NotImplementedError, ImportError)
 # Recipe per sound name: (generator, constant arguments).
 _SWEEP = "sweep"
 _NOISE = "noise"
+_TICK_TOCK = "tick_tock"
 _RECIPES = {
     "launch": (_SWEEP, SOUND_LAUNCH_SWEEP),
     "explosion": (_NOISE, SOUND_EXPLOSION_NOISE),
@@ -24,6 +25,7 @@ _RECIPES = {
     "impact": (_NOISE, SOUND_IMPACT_NOISE),
     "game_over": (_SWEEP, SOUND_GAME_OVER_SWEEP),
     "laser": (_SWEEP, SOUND_LASER_SWEEP),
+    "tick_tock": (_TICK_TOCK, SOUND_TICK_TOCK),
 }
 
 
@@ -91,6 +93,22 @@ def noise_burst(step_hz, duration, sample_rate=SOUND_SAMPLE_RATE,
     return samples
 
 
+def tick_tock(tick_hz, tock_hz, tick_duration, gap_duration, tock_duration,
+              sample_rate=SOUND_SAMPLE_RATE, volume=SOUND_VOLUME):
+    """Return a two-tone ``tick`` + silent ``gap`` + ``tock`` square-wave cue.
+
+    Both tones use ``square_sweep`` at constant frequency so each segment fades
+    cleanly to 0 over its final ``SOUND_FADE_TIME`` seconds. The result is a
+    mono ``array('h')`` of ``round(tick_duration * sample_rate) +
+    round(gap_duration * sample_rate) + round(tock_duration * sample_rate)``
+    signed 16-bit samples.
+    """
+    tick = square_sweep(tick_hz, tick_hz, tick_duration, sample_rate, volume)
+    gap = array('h', bytes(2 * round(gap_duration * sample_rate)))
+    tock = square_sweep(tock_hz, tock_hz, tock_duration, sample_rate, volume)
+    return tick + gap + tock
+
+
 @functools.lru_cache(maxsize=None)
 def sound_bytes(name, sample_rate, channels):
     """Return the raw signed 16-bit mixer buffer for sound ``name``.
@@ -103,6 +121,8 @@ def sound_bytes(name, sample_rate, channels):
     if kind == _SWEEP:
         start_hz, end_hz, duration = args
         mono = square_sweep(start_hz, end_hz, duration, sample_rate)
+    elif kind == _TICK_TOCK:
+        mono = tick_tock(*args, sample_rate)
     else:
         step_hz, duration = args
         mono = noise_burst(step_hz, duration, sample_rate)
