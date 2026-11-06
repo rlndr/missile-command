@@ -1,0 +1,10 @@
+APPROVE
+
+**Reason:** Spawn rate doubles inside rapid-fire windows using only rapid_fire_active(). Merges cleanly onto main with 015 and 400/400 tests pass there.
+
+## Rationale
+- **Gates:** All four round-1 reviews (code, security, ui, ux) say `VERDICT: PASS` with nits only, and no reviewer disagrees. build.md says `STATUS: READY`.
+- **Criteria:** Each [test] criterion (1 to 11) has its own asserting test in `tests/test_rapid_fire_spawns.py`, and the exact spawn-time lists match the spec. Criterion 12 [visual] was rendered by both the builder and the ui reviewer. The window frame has a red tower and more enemy heads (3 vs 2 and 2 vs 1). The gap on screen is modest because fall time limits how many missiles are in the air at once. The spawn count itself doubles exactly, which tests 4 and 7 confirm.
+- **Tests now:** On the branch, 363 passed. I trial-merged onto current main (f042ae0, which includes 015) in a scratch worktree, then removed it. The merge was a clean auto-merge, and the merged suite gives 400 passed. Criterion 3's 015 case and all of 015's own tests pass unchanged. A direct check on the merged tree with the real repeating `rapid_fire_active()` gives an interval of 1.0 at 65, 125, 185 and 245, and 2.0 at 100 and 130.
+- **Scope:** The diff touches only the four files the spec names. That is about 15 lines in `systems/game_loop.py`: the new method sits after `spawn_incoming_missile()`, and one line changes in `update()`. `rapid_fire_active()` is untouched. There is one constant in the Difficulty block, one README Features bullet with the Gameplay line untouched, and one new test file. No existing tests are edited, and nothing changes in `entities/` or `systems/sound.py`.
+- **Risk:** Low. There are no new dependencies, and nothing changes in `config.json` or how it is saved (its sha256 is unchanged at e39479a1...ed8). Nothing is deleted and nothing is restructured. At most one spawn still happens per frame. The UX nits (no HUD cue, double spawns in about 17% of play once 015 is in) are spec'd as out of scope and are best left to a play-test.

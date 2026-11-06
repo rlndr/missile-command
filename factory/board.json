@@ -218,6 +218,91 @@
       "builder": "a09a186222e862444",
       "note": "Auto-approved",
       "updated": "2026-11-06T02:07:01Z"
+    },
+    {
+      "id": "013-rapid-fire-powerup",
+      "title": "Rapid-fire launcher window after one minute",
+      "branch": "factory/013-rapid-fire-powerup",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "af777e9af2addd6b0",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T02:22:20Z"
+    },
+    {
+      "id": "014-wave-counter",
+      "title": "Wave number in the HUD, up by one every 30 seconds of play",
+      "branch": "factory/014-wave-counter",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a5a3cfd6d9f66787c",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T02:21:20Z"
+    },
+    {
+      "id": "015-repeat-rapid-fire",
+      "title": "Rapid-fire window repeats every minute of play",
+      "branch": "factory/015-repeat-rapid-fire",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a7c246041aaeed637",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T02:36:46Z"
+    },
+    {
+      "id": "016-rapid-fire-double-spawn",
+      "title": "Twice as many incoming missiles while rapid fire is on",
+      "branch": "factory/016-rapid-fire-double-spawn",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "a4e1f2d6af5309f86",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T02:41:11Z"
+    },
+    {
+      "id": "017-pause-overlay",
+      "title": "Pause shows the frozen battlefield, dimmed, with the keys that work while paused",
+      "branch": "factory/017-pause-overlay",
+      "stage": "needs-human",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "adb11061f1e609521",
+      "note": "Paused by human: all 4 reviews PASS, approver not run. Trial-merge vs main (has 016) before merging.",
+      "updated": "2026-11-06T02:45:13Z"
     }
   ]
 }

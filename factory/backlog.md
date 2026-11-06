@@ -16,6 +16,7 @@
 
 - [x] Launcher cooldown indicator: draw a small bar under the launcher that fills as BASE_COOLDOWN_TIME elapses, so the player can see when they can fire again → 008-cooldown-indicator
 - [x] Unit tests for collision detection and score calculation, as listed in GAME_DESIGN.md §13 → 011-collision-score-tests
-- [ ] Wave counter: every 30 seconds of play the wave number goes up and is shown in the HUD next to the score
-- [ ] Pause overlay: when paused, dim the screen and list the controls
+- [x] Wave counter: every 30 seconds of play the wave number goes up and is shown in the HUD next to the score → 014-wave-counter
+- [x] Pause overlay: when paused, dim the screen and list the controls → 017-pause-overlay
 - [ ] Pause screen text: replace "SPACE: Start / Restart" (SPACE does nothing while paused) with the keys that work there, ESC to resume
+- [ ] Building explosions: fix CollisionSystem.building_in_explosion so it measures from the nearest point on the building (today it measures from the top-left corner and misses blasts centred inside a building, e.g. Building(100, 500) with a blast at (130, 520) r=30 returns False), and when an enemy missile destroys a building, play a big, fiery explosion over it — larger than a defense blast, with layered orange/yellow/red fire that flickers and fades
