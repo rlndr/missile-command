@@ -94,6 +94,10 @@ STATE_PLAYING = "playing"
 STATE_PAUSED = "paused"
 STATE_GAME_OVER = "game_over"
 
+# Pause overlay
+PAUSE_OVERLAY_COLOR = COLOR_BLACK  # Colour of the layer that dims the frozen battlefield
+PAUSE_OVERLAY_ALPHA = 160          # Overlay opacity, 0-255 (scene ends up at about 37 % brightness)
+
 # Scoring
 MISSILE_INTERCEPT_POINTS = 10    # Points per enemy missile destroyed by a player explosion
 SURVIVAL_POINTS_PER_SECOND = 1   # Points per whole second survived in play

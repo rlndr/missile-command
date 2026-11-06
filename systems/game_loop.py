@@ -48,6 +48,10 @@ class MainGame:
         
         self.game_time = 0.0
         self.shake_intensity = 0
+
+        # Full-screen layer that dims the frozen battlefield while paused
+        self.pause_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        self.pause_overlay.fill((*PAUSE_OVERLAY_COLOR, PAUSE_OVERLAY_ALPHA))
     
     def start_game(self):
         """Initialize game entities at start and ready the launcher to fire."""
@@ -270,8 +274,15 @@ class MainGame:
         return score_rect, wave_rect
 
     def draw(self):
-        """Render the game frame."""
-        
+        """Render the game frame and show it with one ``flip()``."""
+        self.draw_scene()
+        pygame.display.flip()
+
+    def draw_scene(self):
+        """Draw the battlefield and HUD to ``self.screen`` without flipping.
+
+        Only reads game state, so it is safe to call every paused frame.
+        """
         for y in range(SCREEN_HEIGHT):
             intensity = int(COLOR_BLUE[1] + (y / SCREEN_HEIGHT) * (COLOR_DARK_BLUE[1] - COLOR_BLUE[1]))
             color = (COLOR_BLUE[0], intensity, COLOR_BLUE[2])
@@ -307,7 +318,9 @@ class MainGame:
 
         self.draw_hud()
 
-        pygame.display.flip()
+    def draw_pause_overlay(self):
+        """Blit the translucent pause layer over the whole screen; doesn't flip."""
+        self.screen.blit(self.pause_overlay, (0, 0))
 
     def check_collisions(self):
         """Check all collisions and handle damage/effects."""
@@ -404,22 +417,27 @@ class MainGame:
     def menu_lines(self):
         """Return the start or pause screen text as ``(text, font_size, color, centre_y)``.
 
-        Lines are listed top to bottom. Other states return an empty list.
+        Lines are listed top to bottom. The pause screen lists only the keys
+        that work while paused. Other states return an empty list.
         """
         mid = SCREEN_HEIGHT // 2
+        mute_line = ("M: Unmute sound" if self.sound.muted else "M: Mute sound",
+                     36, COLOR_WHITE, mid + 140)
+        if self.state == STATE_PAUSED:
+            return [
+                ("PAUSED", 48, COLOR_WHITE, mid - 120),
+                (f"Score: {self.score_system.score:,}", 36, COLOR_YELLOW, mid - 30),
+                ("Controls:", 36, COLOR_WHITE, mid + 80),
+                ("ESC: Resume", 36, COLOR_WHITE, mid + 110),
+                mute_line,
+                ("Press ESC to Resume", 48, COLOR_YELLOW, mid + 190),
+            ]
         if self.state == STATE_START:
             header = [
                 ("Missile Command Clone", 48, COLOR_WHITE, mid - 120),
                 ("Defend the city!", 36, COLOR_GRAY, mid - 80),
                 (f"High Score: {self.score_system.high_score:,}", 36, COLOR_YELLOW, mid - 30),
             ]
-            prompt = "Press SPACE to Start"
-        elif self.state == STATE_PAUSED:
-            header = [
-                ("PAUSED", 48, COLOR_WHITE, mid - 120),
-                (f"Score: {self.score_system.score:,}", 36, COLOR_YELLOW, mid - 30),
-            ]
-            prompt = "Press ESC to Resume"
         else:
             return []
         controls = [
@@ -427,19 +445,27 @@ class MainGame:
             ("Mouse Click: Launch defense missile", 36, COLOR_WHITE, mid + 50),
             ("SPACE: Start / Restart", 36, COLOR_WHITE, mid + 80),
             ("ESC: Pause / Resume", 36, COLOR_WHITE, mid + 110),
-            ("M: Unmute sound" if self.sound.muted else "M: Mute sound",
-             36, COLOR_WHITE, mid + 140),
+            mute_line,
         ]
-        return header + controls + [(prompt, 48, COLOR_YELLOW, mid + 190)]
+        return header + controls + [("Press SPACE to Start", 48, COLOR_YELLOW, mid + 190)]
 
     def draw_start_screen(self):
-        """Draw the start/pause/game over screen."""
-        self.screen.fill(COLOR_DARK_BLUE)
+        """Draw the start/pause/game over screen and flip once.
 
-        # Darken background
-        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 128))
-        self.screen.blit(overlay, (0, 0))
+        The pause screen shows the frozen battlefield dimmed under
+        ``draw_pause_overlay()``; the start and game over screens use a flat
+        darkened background.
+        """
+        if self.state == STATE_PAUSED:
+            self.draw_scene()
+            self.draw_pause_overlay()
+        else:
+            self.screen.fill(COLOR_DARK_BLUE)
+
+            # Darken background
+            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128))
+            self.screen.blit(overlay, (0, 0))
         
         font = pygame.font.Font(None, 48)
         small_font = pygame.font.Font(None, 36)
