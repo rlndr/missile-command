@@ -8,6 +8,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 - Explosions chain-react and can intercept incoming missiles mid-flight
 - Buildings are damaged only by enemy missile impacts (3 hits destroy one); your own explosions never harm the city
 - Score tracks missile hits and survival time, with high score persistence
+- A wave counter next to the score goes up by one every 30 seconds of play
 - Difficulty ramps up continuously as the game progresses
 - Enemy missiles leave a short exhaust trail that fades from orange to grey smoke
 

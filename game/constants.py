@@ -91,6 +91,9 @@ STATE_GAME_OVER = "game_over"
 MISSILE_INTERCEPT_POINTS = 10    # Points per enemy missile destroyed by a player explosion
 SURVIVAL_POINTS_PER_SECOND = 1   # Points per whole second survived in play
 HUD_MARGIN = 10                  # Gap in px between the HUD score and the top/right screen edges
+WAVE_DURATION = 30.0             # Seconds of play per wave
+HUD_WAVE_COLOR = COLOR_WHITE     # HUD wave text colour, distinct from the yellow score
+HUD_WAVE_GAP = 24                # Gap in px between the HUD wave text and the score text
 
 # High score
 HIGH_SCORE_MAX = 999_999_999  # Largest stored high score that is believed
