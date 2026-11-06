@@ -23,6 +23,8 @@ class DefensiveBase(GameEntity):
         super().__init__(LAUNCHER_X, LAUNCHER_Y)
         
         self.cooldown_time = BASE_COOLDOWN_TIME
+        self.cooldown_length = BASE_COOLDOWN_TIME
+        self.rapid_fire = False
         self.is_active = True
         self.width = LAUNCHER_WIDTH
         self.height = LAUNCHER_HEIGHT
@@ -34,22 +36,44 @@ class DefensiveBase(GameEntity):
     def reset(self):
         """Put the launcher in its ready state for a new game.
 
-        Clears the reload (``cooldown_time`` and ``cooldown_ratio`` to 0.0) and
-        brings the launcher back online. Position, size and render offsets are
-        left alone. Calling it again changes nothing.
+        Clears the reload (``cooldown_time`` and ``cooldown_ratio`` to 0.0),
+        turns rapid fire off (``cooldown_length`` back to
+        ``BASE_COOLDOWN_TIME``) and brings the launcher back online. Position,
+        size and render offsets are left alone. Calling it again changes
+        nothing.
         """
         self.cooldown_time = 0.0
         self.cooldown_ratio = 0.0
+        self.cooldown_length = BASE_COOLDOWN_TIME
+        self.rapid_fire = False
         self.is_active = True
+
+    def set_rapid_fire(self, on):
+        """Turn the rapid-fire reload on or off.
+
+        Switching on cuts a reload that has longer than
+        ``RAPID_FIRE_COOLDOWN_TIME`` left down to that, so a slow reload
+        doesn't eat into the window. Switching off lets the running reload
+        finish as it is.
+        """
+        switching_on = bool(on) and not self.rapid_fire
+        self.rapid_fire = bool(on)
+        if switching_on and self.cooldown_time > RAPID_FIRE_COOLDOWN_TIME:
+            self.cooldown_time = RAPID_FIRE_COOLDOWN_TIME
+            self.cooldown_length = RAPID_FIRE_COOLDOWN_TIME
 
     def can_fire(self):
         """Check if base can fire another missile."""
         return self.is_active and self.cooldown_time <= 0
     
     def start_cooldown(self):
-        """Start cooldown after firing a missile."""
+        """Start the reload after firing: short while rapid fire is on, else normal."""
         if self.is_active:
-            self.cooldown_time = BASE_COOLDOWN_TIME
+            if self.rapid_fire:
+                self.cooldown_length = RAPID_FIRE_COOLDOWN_TIME
+            else:
+                self.cooldown_length = BASE_COOLDOWN_TIME
+            self.cooldown_time = self.cooldown_length
     
     def update(self, dt):
         """Update cooldown timer."""
@@ -59,19 +83,20 @@ class DefensiveBase(GameEntity):
         self.cooldown_time = max(0, self.cooldown_time - dt)
         
         # Visual indicator for cooldown
-        self.cooldown_ratio = min(1.0, self.cooldown_time / BASE_COOLDOWN_TIME)
+        self.cooldown_ratio = min(1.0, self.cooldown_time / self.cooldown_length)
     
     def reload_progress(self):
         """Return how far the reload has got, from 0.0 (just fired) to 1.0 (ready).
 
-        Worked out from ``cooldown_time`` on every call, so it is never stale
+        Worked out from ``cooldown_time`` and the length of the current reload
+        (``cooldown_length``) on every call, so it is never stale
         (unlike ``cooldown_ratio``). Clamped to ``[0.0, 1.0]``. Returns 0.0 when
         the launcher is offline, so the bar never looks ready while
         ``can_fire()`` is False.
         """
         if not self.is_active:
             return 0.0
-        progress = 1.0 - self.cooldown_time / BASE_COOLDOWN_TIME
+        progress = 1.0 - self.cooldown_time / self.cooldown_length
         return max(0.0, min(1.0, progress))
 
     def cooldown_bar_rects(self):
@@ -108,12 +133,18 @@ class DefensiveBase(GameEntity):
         )
 
     def draw_base(self, screen, active_color=COLOR_WHITE, inactive_color=COLOR_GRAY):
-        """Draw the tower body, its barrel in the same colour and the reload bar under it."""
+        """Draw the tower body, its barrel in the same colour and the reload bar under it.
+
+        While active with rapid fire on, the body and barrel use
+        ``LAUNCHER_RAPID_FIRE_COLOR`` instead of ``active_color``.
+        """
         
         if not self.is_active:
             color = inactive_color
             # Add visual indicator that base is offline
             pygame.draw.rect(screen, COLOR_RED, self.get_bounds(), 3)
+        elif self.rapid_fire:
+            color = LAUNCHER_RAPID_FIRE_COLOR
         else:
             color = active_color
         

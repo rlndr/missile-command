@@ -145,8 +145,9 @@ class MainGame:
         if self.base.can_fire():
             missile = DefenseMissile(pygame.math.Vector2(target_point))
             self.defense_missiles.append(missile)
+            sound_name = "laser" if self.base.rapid_fire else "launch"
             self.base.start_cooldown()
-            self.sound.play("launch")
+            self.sound.play(sound_name)
     
     def draw_missile(self, missile, color):
         """Draw a missile as a small circle."""
@@ -154,9 +155,20 @@ class MainGame:
                           (int(missile.position.x), int(missile.position.y)),
                           missile.radius)
     
+    def rapid_fire_active(self):
+        """Return True while play time is inside the once-per-game rapid-fire window.
+
+        The window is ``[RAPID_FIRE_START_TIME, RAPID_FIRE_START_TIME +
+        RAPID_FIRE_DURATION)`` of ``game_time``, which only advances in
+        ``update()``, so paused time never counts.
+        """
+        return (RAPID_FIRE_START_TIME <= self.game_time
+                < RAPID_FIRE_START_TIME + RAPID_FIRE_DURATION)
+
     def update(self, dt):
         """Update all game entities."""
         self.game_time += dt
+        self.base.set_rapid_fire(self.rapid_fire_active())
         self.score_system.add_survival_time(dt)
 
         current_interval = max(MIN_SPAWN_INTERVAL,
