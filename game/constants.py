@@ -27,6 +27,13 @@ MIN_SPAWN_INTERVAL = 2.0   # Fastest we'll ever spawn enemies
 INCOMING_MISSILE_SPEED = 200
 DEFENSE_MISSILE_SPEED = 380
 
+# Enemy missile exhaust trail
+ENEMY_TRAIL_SPACING = 6                    # Minimum px between trail samples
+ENEMY_TRAIL_MAX_POINTS = 12                # Samples kept per missile (about 80 px of trail)
+ENEMY_TRAIL_WIDTH = 2                      # Trail line width in px
+ENEMY_TRAIL_HEAD_COLOR = COLOR_ORANGE      # Hot exhaust next to the missile
+ENEMY_TRAIL_TAIL_COLOR = COLOR_GRAY        # Cooled smoke at the far end
+
 # Defensive base settings
 BASE_COOLDOWN_TIME = 1.5  # Seconds between missile launches from launcher
 COOLDOWN_BAR_HEIGHT = 4  # Reload bar height in px

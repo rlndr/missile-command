@@ -222,6 +222,11 @@ class MainGame:
             if not building.is_destroyed:
                 building.draw_building(self.screen)
         
+        # Enemy trails go under every missile head and explosion
+        for missile in list(self.incoming_missiles):
+            if not missile.is_destroyed:
+                missile.draw_trail(self.screen)
+
         for missile in list(self.defense_missiles):
             self.draw_missile(missile, COLOR_YELLOW)
         
