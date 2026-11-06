@@ -46,7 +46,11 @@ class CollisionSystem:
     @staticmethod
     def building_in_explosion(building, explosion):
         """Check if building is within explosion damage radius."""
-        distance = (building.position - explosion.position).length()
+        rect = building.get_bounds()
+        closest_x = max(rect.x, min(explosion.position.x, rect.right))
+        closest_y = max(rect.y, min(explosion.position.y, rect.bottom))
+        distance = ((explosion.position.x - closest_x) ** 2 +
+                    (explosion.position.y - closest_y) ** 2) ** 0.5
         return distance <= explosion.radius
     
     @staticmethod
