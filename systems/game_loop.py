@@ -156,14 +156,19 @@ class MainGame:
                           missile.radius)
     
     def rapid_fire_active(self):
-        """Return True while play time is inside the once-per-game rapid-fire window.
+        """Return True while play time is inside a repeating rapid-fire window.
 
-        The window is ``[RAPID_FIRE_START_TIME, RAPID_FIRE_START_TIME +
-        RAPID_FIRE_DURATION)`` of ``game_time``, which only advances in
-        ``update()``, so paused time never counts.
+        A window opens at ``RAPID_FIRE_START_TIME`` and again every
+        ``RAPID_FIRE_INTERVAL`` seconds after that, and each lasts
+        ``RAPID_FIRE_DURATION`` seconds: [60, 70), [120, 130), ... There is
+        no window before ``RAPID_FIRE_START_TIME``. It is worked out only from
+        ``game_time``, which only advances in ``update()``, so paused time
+        never counts and ``start_game()`` restarts the cycle.
         """
-        return (RAPID_FIRE_START_TIME <= self.game_time
-                < RAPID_FIRE_START_TIME + RAPID_FIRE_DURATION)
+        if self.game_time < RAPID_FIRE_START_TIME:
+            return False
+        return ((self.game_time - RAPID_FIRE_START_TIME) % RAPID_FIRE_INTERVAL
+                < RAPID_FIRE_DURATION)
 
     def update(self, dt):
         """Update all game entities."""

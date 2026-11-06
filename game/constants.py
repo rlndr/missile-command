@@ -47,9 +47,10 @@ COOLDOWN_BAR_TRACK_COLOR = COLOR_DARK_BLUE  # Empty part of the reload bar
 COOLDOWN_BAR_FILL_COLOR = COLOR_ORANGE      # Filled part while reloading
 COOLDOWN_BAR_READY_COLOR = COLOR_YELLOW     # Full bar when the launcher can fire
 
-# Rapid-fire window: once per game, after a minute of play
+# Rapid-fire window: repeats every minute of play, starting after the first minute
 RAPID_FIRE_START_TIME = 60.0            # Seconds of play before the window opens
 RAPID_FIRE_DURATION = 10.0              # Window length in seconds
+RAPID_FIRE_INTERVAL = 60.0              # Seconds from one window opening to the next
 RAPID_FIRE_COOLDOWN_TIME = 0.1          # Seconds between launches during the window
 LAUNCHER_RAPID_FIRE_COLOR = COLOR_RED   # Tower body and barrel during the window
 
