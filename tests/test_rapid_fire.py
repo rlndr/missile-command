@@ -69,7 +69,7 @@ def test_constants():
     assert LAUNCHER_RAPID_FIRE_COLOR == COLOR_RED
     assert SOUND_LASER_SWEEP == (1800, 300, 0.08)
     assert SOUND_NAMES == ("launch", "explosion", "intercept", "impact", "game_over",
-                           "laser")
+                           "laser", "tick_tock")
 
 
 # 2. Window boundaries
