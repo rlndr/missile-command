@@ -223,6 +223,35 @@ class MainGame:
         """Return the in-play HUD score line, e.g. ``"SCORE: 1,234"``."""
         return f"SCORE: {self.score_system.score:,}"
 
+    def current_wave(self):
+        """Return the current wave number, derived from ``game_time``.
+
+        Wave 1 covers the first ``WAVE_DURATION`` seconds of play and each
+        further ``WAVE_DURATION`` seconds adds one. ``game_time`` only grows
+        while playing, so pauses and menus don't advance the wave.
+        """
+        return int(self.game_time // WAVE_DURATION) + 1
+
+    def hud_wave_text(self):
+        """Return the in-play HUD wave line, e.g. ``"WAVE: 3"``."""
+        return f"WAVE: {self.current_wave():,}"
+
+    def draw_hud(self):
+        """Draw the score and wave HUD on one row at the top right.
+
+        The score is right-aligned ``HUD_MARGIN`` px from the top and right
+        edges; the wave sits ``HUD_WAVE_GAP`` px to the left of the measured
+        score text. Returns ``(score_rect, wave_rect)``; doesn't flip.
+        """
+        font = pygame.font.Font(None, 36)
+        score_surf = font.render(self.hud_score_text(), True, COLOR_YELLOW)
+        score_rect = score_surf.get_rect(topright=(SCREEN_WIDTH - HUD_MARGIN, HUD_MARGIN))
+        wave_surf = font.render(self.hud_wave_text(), True, HUD_WAVE_COLOR)
+        wave_rect = wave_surf.get_rect(topright=(score_rect.left - HUD_WAVE_GAP, HUD_MARGIN))
+        self.screen.blit(score_surf, score_rect)
+        self.screen.blit(wave_surf, wave_rect)
+        return score_rect, wave_rect
+
     def draw(self):
         """Render the game frame."""
         
@@ -259,10 +288,7 @@ class MainGame:
             if explosion.is_active:
                 explosion.draw_explosion(self.screen)
 
-        font = pygame.font.Font(None, 36)
-        score_surf = font.render(self.hud_score_text(), True, COLOR_YELLOW)
-        score_rect = score_surf.get_rect(topright=(SCREEN_WIDTH - HUD_MARGIN, HUD_MARGIN))
-        self.screen.blit(score_surf, score_rect)
+        self.draw_hud()
 
         pygame.display.flip()
 
