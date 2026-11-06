@@ -17,8 +17,8 @@ from systems.game_loop import MainGame
 FIRE = {"fire_missile": (400, 300)}
 START = {"start": True}
 PAUSE = {"toggle_pause": True}
-TRACK = pygame.Rect(5, 34, 60, 4)
-ROW = 35
+TRACK = pygame.Rect(370, 584, 60, 4)
+ROW = 585
 
 
 def _bar_colours():
@@ -87,7 +87,7 @@ def test_bar_position():
     base = DefensiveBase()
     track, fill = base.cooldown_bar_rects()
     bounds = base.get_bounds()
-    assert track == pygame.Rect(5, 34, 60, 4)
+    assert track == pygame.Rect(370, 584, 60, 4)
     assert not track.colliderect(bounds)
     assert pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT).contains(track)
     assert (track.left, track.width) == (bounds.left, bounds.width)
@@ -154,12 +154,12 @@ def test_pixels_ready():
     base = DefensiveBase()
     base.reset()
     surface = _surface_draw(base)
-    for x in (5, 34, 64):
+    for x in (370, 399, 429):
         assert _px(surface, x, ROW) == ready
-    assert _px(surface, 4, ROW) == COLOR_BLACK
-    assert _px(surface, 65, ROW) == COLOR_BLACK
-    assert _px(surface, 30, 32) == COLOR_BLACK
-    assert _px(surface, 30, 15) == COLOR_WHITE
+    assert _px(surface, 369, ROW) == COLOR_BLACK
+    assert _px(surface, 430, ROW) == COLOR_BLACK
+    assert _px(surface, 400, 582) == COLOR_BLACK
+    assert _px(surface, 400, 555) == COLOR_WHITE
 
 
 # Criterion 7
@@ -183,9 +183,9 @@ def test_pixels_half_reloaded():
     base.start_cooldown()
     base.update(0.75)
     surface = _surface_draw(base)
-    for x in (5, 20, 34):
+    for x in (370, 385, 399):
         assert _px(surface, x, ROW) == fill_c
-    for x in (35, 50, 64):
+    for x in (400, 415, 429):
         assert _px(surface, x, ROW) == track_c
     assert ready_c not in _region(surface, TRACK)
 
@@ -218,12 +218,12 @@ def test_wired_into_game_frame(main_game):
     game.handle_actions(FIRE)
     game.update(0.75)
     game.draw()
-    assert _px(game.screen, 10, ROW) == fill_c
-    assert _px(game.screen, 50, ROW) == track_c
+    assert _px(game.screen, 375, ROW) == fill_c
+    assert _px(game.screen, 415, ROW) == track_c
     game.update(1.0)
     game.draw()
-    assert _px(game.screen, 10, ROW) == ready_c
-    assert _px(game.screen, 50, ROW) == ready_c
+    assert _px(game.screen, 375, ROW) == ready_c
+    assert _px(game.screen, 415, ROW) == ready_c
 
 
 # Criterion 11
@@ -257,7 +257,7 @@ def test_new_game_shows_full_bar(start_screen_game):
     game.handle_actions(START)
     assert _fill_width(game.base) == 60
     game.draw()
-    assert _px(game.screen, 10, ROW) == ready_c
+    assert _px(game.screen, 375, ROW) == ready_c
 
 
 # Criterion 13
@@ -266,7 +266,7 @@ def test_not_on_menu_screens(start_screen_game):
     colours = _bar_colours()
     game = start_screen_game
     game.draw_start_screen()
-    assert _px(game.screen, 10, ROW) not in colours
+    assert _px(game.screen, 375, ROW) not in colours
     game.state = STATE_PAUSED
     game.draw_start_screen()
-    assert _px(game.screen, 10, ROW) not in colours
+    assert _px(game.screen, 375, ROW) not in colours

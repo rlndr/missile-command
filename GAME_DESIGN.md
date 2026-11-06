@@ -89,8 +89,8 @@ Behavior:
 #### DefenseMissile (Player)
 ```
 Properties:
-  - position: Vector2 (starts at top-left launcher)
-  - velocity: Vector2 (moves diagonally from top-left to target)
+  - position: Vector2 (starts at the launcher's muzzle, bottom centre)
+  - velocity: Vector2 (rises in a straight line from the muzzle to the target)
   - speed: 300-400 px/sec (faster than enemy)
   - turn_rate: max turning radius for curve shots
   - is_destroyed: bool
@@ -105,13 +105,13 @@ Behavior:
 ### 4.2 Defensive Base
 ```
 Properties:
-  - position: Vector2 (top-left corner of play area)
+  - position: Vector2 (muzzle of the tower on the ground at the bottom centre)
   - is_active: bool (can launch missiles)
   - health: int (can take damage, goes offline if destroyed)
   - cooldown: float (missile reload time between shots)
 
 Behavior:
-  - Stationary launcher at top-left
+  - Stationary launcher tower at the bottom centre, between the two city halves
   - Cooldown timer after each missile launch
   - Visual indicator when on cooldown/offline
   - Can be knocked out by nearby explosions
@@ -257,7 +257,7 @@ At least one incoming missile appears every 5-7 seconds minimum
 ## 10. Visual Design Elements
 
 ### Required Sprites
-1. **Top launcher** (base icon)
+1. **Bottom-centre launcher tower** (base icon)
 2. **Incoming missile** (red or enemy color)
 3. **Defense missile** (white/yellow trajectory)
 4. **Building sprites** (3-4 types, front/back for Z-sorting)
@@ -358,7 +358,7 @@ class GameEntity:
 - Explosion damage radius testing
 
 ### Playtest Checklist
-- [ ] Can launch defense missiles from top-left launcher
+- [ ] Can launch defense missiles from the bottom-centre launcher tower
 - [ ] Incoming missiles spawn at random positions and move downward-left
 - [ ] Clicking screen launches missile to target point
 - [ ] Buildings take explosion damage correctly
