@@ -27,6 +27,7 @@ DT_DEFAULT = 1.0 / 60  # Delta time for 60 FPS
 BASE_SPAWN_INTERVAL = 3.5  # Seconds between incoming missile spawns
 DIFFICULTY_RAMP_RATE = 0.05  # How much spawn rate decreases per second
 MIN_SPAWN_INTERVAL = 2.0   # Fastest we'll ever spawn enemies
+RAPID_FIRE_SPAWN_RATE_MULTIPLIER = 2  # Enemy spawn rate multiplier while rapid fire is on
 
 # Missile speeds (pixels per second)
 INCOMING_MISSILE_SPEED = 200

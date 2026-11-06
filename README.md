@@ -10,6 +10,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 - Score tracks missile hits and survival time, with high score persistence
 - A wave counter next to the score goes up by one every 30 seconds of play
 - Difficulty ramps up continuously as the game progresses
+- While the launcher's rapid-fire window is open, enemy missiles come twice as often
 - Enemy missiles leave a short exhaust trail that fades from orange to grey smoke
 
 ## Requirements
