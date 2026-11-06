@@ -29,6 +29,9 @@ class InputSystem:
                 
                 elif event.key == pygame.K_SPACE:
                     actions["start"] = True
+
+                elif event.key == pygame.K_m:
+                    actions["toggle_mute"] = True
             
             elif event.type == pygame.KEYUP:
                 self.key_released[event.key] = True
