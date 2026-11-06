@@ -14,6 +14,11 @@ COLOR_YELLOW = (255, 255, 50)  # Defense missiles
 COLOR_GRAY = (80, 80, 80)      # Buildings
 COLOR_BLUE = (50, 100, 200)    # Background night sky gradient
 COLOR_DARK_BLUE = (30, 40, 60) # Darker night background
+COLOR_GROUND = (70, 90, 50)    # Dark olive ground strip
+
+# Ground
+GROUND_HEIGHT = 20                       # Height of the ground strip along the bottom
+GROUND_Y = SCREEN_HEIGHT - GROUND_HEIGHT  # Top of the ground; buildings and the tower stand here
 
 # Game timing constants
 DT_DEFAULT = 1.0 / 60  # Delta time for 60 FPS
@@ -26,6 +31,13 @@ MIN_SPAWN_INTERVAL = 2.0   # Fastest we'll ever spawn enemies
 # Missile speeds (pixels per second)
 INCOMING_MISSILE_SPEED = 200
 DEFENSE_MISSILE_SPEED = 380
+
+# Enemy missile exhaust trail
+ENEMY_TRAIL_SPACING = 6                    # Minimum px between trail samples
+ENEMY_TRAIL_MAX_POINTS = 12                # Samples kept per missile (about 80 px of trail)
+ENEMY_TRAIL_WIDTH = 2                      # Trail line width in px
+ENEMY_TRAIL_HEAD_COLOR = COLOR_ORANGE      # Hot exhaust next to the missile
+ENEMY_TRAIL_TAIL_COLOR = COLOR_GRAY        # Cooled smoke at the far end
 
 # Defensive base settings
 BASE_COOLDOWN_TIME = 1.5  # Seconds between missile launches from launcher
@@ -47,6 +59,10 @@ BUILDING_TYPES = {
     }
 }
 
+# City layout: two mirrored groups of buildings either side of the launcher
+CITY_EDGE_MARGIN = 30   # Gap in px between the outer buildings and the screen edges
+BUILDING_SPACING = 80   # Px from one building's left edge to the next in a group
+
 # Explosion settings
 EXPLOSION_MAX_RADIUS = 80
 EXPLOSION_EXPANSION_TIME = 0.5
@@ -57,9 +73,13 @@ SCREEN_SHAKE_BUILDING_HIT = 5    # Intensity when an incoming missile hits a bui
 SCREEN_SHAKE_INTERCEPT = 8       # Intensity when a defence missile intercepts an incoming one
 SCREEN_SHAKE_DECAY_RATE = 2.0    # Intensity units lost per second
 
-# Launcher position (top-left corner)
-LAUNCHER_X_OFFSET = 20
-LAUNCHER_Y_OFFSET = 20
+# Launcher tower, standing on the ground at the bottom centre
+LAUNCHER_WIDTH = 60          # Tower body width
+LAUNCHER_HEIGHT = 50         # Tower body height
+LAUNCHER_BARREL_WIDTH = 8    # Barrel on top of the body
+LAUNCHER_BARREL_HEIGHT = 16
+LAUNCHER_X = SCREEN_WIDTH // 2                                    # Muzzle x (top centre of the barrel)
+LAUNCHER_Y = GROUND_Y - LAUNCHER_HEIGHT - LAUNCHER_BARREL_HEIGHT  # Muzzle y; defense missiles start here
 
 # Game states
 STATE_START = "start"

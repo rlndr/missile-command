@@ -9,6 +9,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 - Buildings are damaged only by enemy missile impacts (3 hits destroy one); your own explosions never harm the city
 - Score tracks missile hits and survival time, with high score persistence
 - Difficulty ramps up continuously as the game progresses
+- Enemy missiles leave a short exhaust trail that fades from orange to grey smoke
 
 ## Requirements
 
@@ -58,6 +59,6 @@ Or, with `pygame` and `pytest` installed in your environment, `python -m pytest 
 
 ## Gameplay
 
-Your launcher sits in the top-left corner of the screen. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1. The bar under the launcher fills in orange while it reloads and turns yellow when it can fire again. The retro-style sound effects for launches, explosions, intercepts, city hits and game over are generated in code from square waves and noise, with no audio files.
+Your launcher tower stands on the ground at the bottom centre of the screen, between the two halves of the city, and your missiles rise from its barrel. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1. The bar under the launcher fills in orange while it reloads and turns yellow when it can fire again. The retro-style sound effects for launches, explosions, intercepts, city hits and game over are generated in code from square waves and noise, with no audio files.
 
 The game ends when all buildings are destroyed. Your final score and high score are displayed on the game over screen. Press SPACE to restart.

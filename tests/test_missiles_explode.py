@@ -22,15 +22,15 @@ from game.constants import (
     DT_DEFAULT,
     EXPLOSION_EXPANSION_TIME,
     EXPLOSION_MAX_RADIUS,
-    LAUNCHER_X_OFFSET,
-    LAUNCHER_Y_OFFSET,
+    LAUNCHER_X,
+    LAUNCHER_Y,
     SCREEN_HEIGHT,
     SCREEN_SHAKE_INTERCEPT,
     SCREEN_WIDTH,
 )
 
 Vector2 = pygame.math.Vector2
-LAUNCHER = Vector2(LAUNCHER_X_OFFSET, LAUNCHER_Y_OFFSET)
+LAUNCHER = Vector2(LAUNCHER_X, LAUNCHER_Y)
 TARGET = Vector2(400, 300)
 
 
@@ -65,18 +65,18 @@ def test_straight_flight():
     m = DefenseMissile(Vector2(400, 300))
     initial_velocity = Vector2(m.velocity)
     step = DEFENSE_MISSILE_SPEED * DT_DEFAULT
-    for n in range(1, 75):
+    for n in range(1, 34):
         m.update(DT_DEFAULT)
         assert m.velocity == initial_velocity
         assert _perpendicular_distance(m.position, LAUNCHER, TARGET) < 1e-6
         assert (m.position - LAUNCHER).length() == pytest.approx(n * step, abs=1e-6)
 
 
-def test_arrival_on_step_75_and_stays():
-    """Criterion 2: arrival on the 75th update, snapped exactly, then no movement."""
+def test_arrival_on_step_34_and_stays():
+    """Criterion 2: arrival on the 34th update, snapped exactly, then no movement."""
     m = DefenseMissile(Vector2(400, 300))
     assert m.reached_target is False
-    for _ in range(74):
+    for _ in range(33):
         m.update(DT_DEFAULT)
     assert m.reached_target is False
     m.update(DT_DEFAULT)
@@ -106,7 +106,7 @@ def test_no_overshoot_stays_on_screen(target, dt):
 
 def test_zero_length_shot():
     """Criterion 4: targeting the launcher itself is safe and arrives immediately."""
-    m = DefenseMissile(Vector2(LAUNCHER_X_OFFSET, LAUNCHER_Y_OFFSET))
+    m = DefenseMissile(Vector2(LAUNCHER_X, LAUNCHER_Y))
     m.update(DT_DEFAULT)
     assert m.reached_target is True
     assert m.position == LAUNCHER
@@ -116,11 +116,11 @@ def test_zero_length_shot():
 
 
 def test_detonation_through_game(main_game):
-    """Criterion 5: one player explosion at the target on frame 75, missile removed next."""
+    """Criterion 5: one player explosion at the target on frame 34, missile removed next."""
     random.seed(0)
     game = main_game
     m = _fire(game)
-    for _ in range(74):
+    for _ in range(33):
         game.update(DT_DEFAULT)
     assert game.explosions == []
     assert m.is_destroyed is False
@@ -252,14 +252,14 @@ def test_no_contact_detonation(main_game):
     """Criterion 11: flying through an incoming missile neither detonates nor kills it."""
     random.seed(0)
     game = main_game
-    incoming = _stationary_incoming(210, 160)
+    incoming = _stationary_incoming(400, 420)
     game.incoming_missiles = [incoming]
-    # Sanity: (210, 160) is on the flight path and far from the target.
-    assert _perpendicular_distance(Vector2(210, 160), LAUNCHER, TARGET) < 1.0
-    assert (TARGET - Vector2(210, 160)).length() > 200
+    # Sanity: (400, 420) is on the flight path and far from the target.
+    assert _perpendicular_distance(Vector2(400, 420), LAUNCHER, TARGET) < 1.0
+    assert (TARGET - Vector2(400, 420)).length() > EXPLOSION_MAX_RADIUS
 
     m = _fire(game)
-    for _ in range(74):
+    for _ in range(33):
         game.update(DT_DEFAULT)
         game.check_collisions()
         assert game.explosions == []
@@ -273,9 +273,9 @@ def test_end_to_end_intercept(main_game):
     """Criterion 12: firing next to an incoming missile kills it shortly after arrival.
 
     The spec's bound of frame 80 is not reachable with the criterion-6
-    timeline: the explosion starts at radius 0 on frame 75 and grows by
+    timeline: the explosion starts at radius 0 on frame 34 and grows by
     ``EXPLOSION_MAX_RADIUS / EXPLOSION_EXPANSION_TIME * DT_DEFAULT`` (~2.67 px)
-    per frame, so it reaches the missile 20 px away on frame 82.
+    per frame, so it reaches the missile 20 px away on frame 41.
     """
     random.seed(0)
     game = main_game
@@ -284,14 +284,14 @@ def test_end_to_end_intercept(main_game):
 
     _fire(game)
     killed_on = None
-    for frame in range(1, 83):
+    for frame in range(1, 42):
         game.update(DT_DEFAULT)
         game.check_collisions()
         if incoming.is_destroyed:
             killed_on = frame
             break
     assert killed_on is not None
-    assert 75 <= killed_on <= 82
+    assert 34 <= killed_on <= 41
     assert game.shake_intensity == SCREEN_SHAKE_INTERCEPT
     game.draw()
 
@@ -334,7 +334,7 @@ def test_missile_drawn_where_it_is(main_game):
     random.seed(0)
     game = main_game
     m = _fire(game)
-    for _ in range(37):
+    for _ in range(17):
         game.update(DT_DEFAULT)
     game.draw()
     assert game.screen.get_at((int(m.position.x), int(m.position.y)))[:3] == COLOR_YELLOW

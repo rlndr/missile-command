@@ -58,11 +58,18 @@ class MainGame:
         self.game_time = 0.0
         self.base.reset()
 
-        # Spawn starting buildings along bottom edge
+        # Spawn the city on the ground in two mirrored halves, left to right,
+        # with the launcher tower in the gap between them
+        half = self.starting_buildings_count // 2
         for i in range(self.starting_buildings_count):
-            x = 30 + (i * 80)  # Staggered positions
-            y = SCREEN_HEIGHT - 60
             building_type = random.choice(list(BUILDING_TYPES.keys()))
+            size = BUILDING_TYPES[building_type]
+            if i < half:
+                x = CITY_EDGE_MARGIN + i * BUILDING_SPACING
+            else:
+                x = (SCREEN_WIDTH - CITY_EDGE_MARGIN - size["width"]
+                     - (self.starting_buildings_count - 1 - i) * BUILDING_SPACING)
+            y = GROUND_Y - size["height"]
             self.buildings.append(Building(x, y, building_type))
         
         # Reset and track score at game start
@@ -224,6 +231,9 @@ class MainGame:
             color = (COLOR_BLUE[0], intensity, COLOR_BLUE[2])
             pygame.draw.line(self.screen, color, (0, y), (SCREEN_WIDTH, y))
         
+        pygame.draw.rect(self.screen, COLOR_GROUND,
+                         pygame.Rect(0, GROUND_Y, SCREEN_WIDTH, GROUND_HEIGHT))
+
         shake_x, shake_y = self.get_shake_offset()
         
         self.base.draw_base(self.screen)
@@ -233,6 +243,11 @@ class MainGame:
             if not building.is_destroyed:
                 building.draw_building(self.screen)
         
+        # Enemy trails go under every missile head and explosion
+        for missile in list(self.incoming_missiles):
+            if not missile.is_destroyed:
+                missile.draw_trail(self.screen)
+
         for missile in list(self.defense_missiles):
             self.draw_missile(missile, COLOR_YELLOW)
         

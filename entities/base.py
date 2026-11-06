@@ -6,20 +6,30 @@ from entities import GameEntity
 
 
 class DefensiveBase(GameEntity):
-    """Player's defensive missile launcher at top-left corner."""
+    """Player's missile launcher: a tower on the ground at the bottom centre.
+
+    The tower is a body standing on the ground strip with a thin barrel on
+    top. Defense missiles leave from the muzzle, the top centre of the barrel.
+    """
     
     def __init__(self):
-        # Position is fixed at top-left
-        super().__init__(LAUNCHER_X_OFFSET, LAUNCHER_Y_OFFSET)
+        """Build the tower with its muzzle at ``(LAUNCHER_X, LAUNCHER_Y)``.
+
+        ``position`` is the muzzle (the launch point). ``width`` and ``height``
+        are the body's size, and the render offsets go from the muzzle to the
+        body's upper-left corner, so ``get_bounds()`` returns the body, which
+        stands on the ground.
+        """
+        super().__init__(LAUNCHER_X, LAUNCHER_Y)
         
         self.cooldown_time = BASE_COOLDOWN_TIME
         self.is_active = True
-        self.width = 60
-        self.height = 30
+        self.width = LAUNCHER_WIDTH
+        self.height = LAUNCHER_HEIGHT
         
-        # Visual offset for rendering
-        self.render_offset_x = -15
-        self.render_offset_y = -20
+        # Offset from the muzzle to the body's upper-left corner
+        self.render_offset_x = -LAUNCHER_WIDTH // 2
+        self.render_offset_y = LAUNCHER_BARREL_HEIGHT
     
     def reset(self):
         """Put the launcher in its ready state for a new game.
@@ -88,8 +98,17 @@ class DefensiveBase(GameEntity):
             self.height
         )
     
+    def barrel_rect(self):
+        """Return the barrel's rect, centred on the muzzle with its bottom on the body's top."""
+        return pygame.Rect(
+            self.position.x - LAUNCHER_BARREL_WIDTH // 2,
+            self.position.y,
+            LAUNCHER_BARREL_WIDTH,
+            LAUNCHER_BARREL_HEIGHT
+        )
+
     def draw_base(self, screen, active_color=COLOR_WHITE, inactive_color=COLOR_GRAY):
-        """Draw the base launcher, its missile tube and the reload bar under it."""
+        """Draw the tower body, its barrel in the same colour and the reload bar under it."""
         
         if not self.is_active:
             color = inactive_color
@@ -102,11 +121,8 @@ class DefensiveBase(GameEntity):
         rect = self.get_bounds()
         pygame.draw.rect(screen, color, rect)
         
-        # Draw missile tube (angled upward)
-        tube_x = self.position.x + self.width // 2 - 8
-        tube_y = self.position.y - 10
-        pygame.draw.rect(screen, COLOR_DARK_BLUE, 
-                        (tube_x - 3, tube_y - 15, 6, 15))
+        # Draw the barrel on top of the body
+        pygame.draw.rect(screen, color, self.barrel_rect())
 
         # Draw the reload bar: the track, then the fill on top of it
         track, fill = self.cooldown_bar_rects()
