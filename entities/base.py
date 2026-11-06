@@ -51,6 +51,34 @@ class DefensiveBase(GameEntity):
         # Visual indicator for cooldown
         self.cooldown_ratio = min(1.0, self.cooldown_time / BASE_COOLDOWN_TIME)
     
+    def reload_progress(self):
+        """Return how far the reload has got, from 0.0 (just fired) to 1.0 (ready).
+
+        Worked out from ``cooldown_time`` on every call, so it is never stale
+        (unlike ``cooldown_ratio``). Clamped to ``[0.0, 1.0]``. Returns 0.0 when
+        the launcher is offline, so the bar never looks ready while
+        ``can_fire()`` is False.
+        """
+        if not self.is_active:
+            return 0.0
+        progress = 1.0 - self.cooldown_time / BASE_COOLDOWN_TIME
+        return max(0.0, min(1.0, progress))
+
+    def cooldown_bar_rects(self):
+        """Return ``(track_rect, fill_rect)`` for the reload bar under the launcher.
+
+        The track is the launcher's width, ``COOLDOWN_BAR_HEIGHT`` tall and
+        ``COOLDOWN_BAR_GAP`` px below its bounds. The fill shares the track's
+        left, top and height; its width is rounded down so it is only full
+        when the reload is done.
+        """
+        bounds = self.get_bounds()
+        track = pygame.Rect(bounds.left, bounds.bottom + COOLDOWN_BAR_GAP,
+                            self.width, COOLDOWN_BAR_HEIGHT)
+        fill = pygame.Rect(track.left, track.top,
+                           int(track.width * self.reload_progress()), track.height)
+        return track, fill
+
     def get_bounds(self):
         """Get rectangular bounds for collision detection."""
         return pygame.Rect(
@@ -61,7 +89,7 @@ class DefensiveBase(GameEntity):
         )
     
     def draw_base(self, screen, active_color=COLOR_WHITE, inactive_color=COLOR_GRAY):
-        """Draw the base launcher."""
+        """Draw the base launcher, its missile tube and the reload bar under it."""
         
         if not self.is_active:
             color = inactive_color
@@ -79,3 +107,10 @@ class DefensiveBase(GameEntity):
         tube_y = self.position.y - 10
         pygame.draw.rect(screen, COLOR_DARK_BLUE, 
                         (tube_x - 3, tube_y - 15, 6, 15))
+
+        # Draw the reload bar: the track, then the fill on top of it
+        track, fill = self.cooldown_bar_rects()
+        pygame.draw.rect(screen, COOLDOWN_BAR_TRACK_COLOR, track)
+        if fill.width > 0:
+            fill_color = COOLDOWN_BAR_READY_COLOR if self.can_fire() else COOLDOWN_BAR_FILL_COLOR
+            pygame.draw.rect(screen, fill_color, fill)

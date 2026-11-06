@@ -29,6 +29,11 @@ DEFENSE_MISSILE_SPEED = 380
 
 # Defensive base settings
 BASE_COOLDOWN_TIME = 1.5  # Seconds between missile launches from launcher
+COOLDOWN_BAR_HEIGHT = 4  # Reload bar height in px
+COOLDOWN_BAR_GAP = 4     # Px between the launcher's bottom edge and the reload bar
+COOLDOWN_BAR_TRACK_COLOR = COLOR_DARK_BLUE  # Empty part of the reload bar
+COOLDOWN_BAR_FILL_COLOR = COLOR_ORANGE      # Filled part while reloading
+COOLDOWN_BAR_READY_COLOR = COLOR_YELLOW     # Full bar when the launcher can fire
 
 # Building settings
 BUILDING_TYPES = {
