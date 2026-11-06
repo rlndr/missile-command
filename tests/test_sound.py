@@ -14,7 +14,8 @@ from entities import IncomingMissile
 from game.constants import (COLOR_WHITE, DT_DEFAULT, MISSILE_INTERCEPT_POINTS,
                             SCREEN_HEIGHT, SOUND_BUFFER_SIZE, SOUND_EXPLOSION_NOISE,
                             SOUND_FADE_TIME, SOUND_GAME_OVER_SWEEP, SOUND_IMPACT_NOISE,
-                            SOUND_INTERCEPT_SWEEP, SOUND_LAUNCH_SWEEP, SOUND_NAMES,
+                            SOUND_INTERCEPT_SWEEP, SOUND_LASER_SWEEP, SOUND_LAUNCH_SWEEP,
+                            SOUND_NAMES,
                             SOUND_NOISE_SEED, SOUND_SAMPLE_RATE, SOUND_VOLUME,
                             STATE_GAME_OVER, STATE_PAUSED, STATE_PLAYING, STATE_START)
 from systems.game_loop import MainGame
@@ -33,6 +34,7 @@ DURATIONS = {
     "intercept": SOUND_INTERCEPT_SWEEP[2],
     "impact": SOUND_IMPACT_NOISE[1],
     "game_over": SOUND_GAME_OVER_SWEEP[2],
+    "laser": SOUND_LASER_SWEEP[2],
 }
 
 
@@ -138,7 +140,8 @@ def test_constants():
     assert SOUND_GAME_OVER_SWEEP == (440, 55, 1.0)
     assert SOUND_EXPLOSION_NOISE == (4000, 0.5)
     assert SOUND_IMPACT_NOISE == (1200, 0.35)
-    assert SOUND_NAMES == ("launch", "explosion", "intercept", "impact", "game_over")
+    assert SOUND_NAMES == ("launch", "explosion", "intercept", "impact", "game_over",
+                           "laser")
 
 
 # 2-3. Square sweeps

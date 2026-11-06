@@ -47,6 +47,12 @@ COOLDOWN_BAR_TRACK_COLOR = COLOR_DARK_BLUE  # Empty part of the reload bar
 COOLDOWN_BAR_FILL_COLOR = COLOR_ORANGE      # Filled part while reloading
 COOLDOWN_BAR_READY_COLOR = COLOR_YELLOW     # Full bar when the launcher can fire
 
+# Rapid-fire window: once per game, after a minute of play
+RAPID_FIRE_START_TIME = 60.0            # Seconds of play before the window opens
+RAPID_FIRE_DURATION = 10.0              # Window length in seconds
+RAPID_FIRE_COOLDOWN_TIME = 0.1          # Seconds between launches during the window
+LAUNCHER_RAPID_FIRE_COLOR = COLOR_RED   # Tower body and barrel during the window
+
 # Building settings
 BUILDING_TYPES = {
     "residential": {
@@ -109,4 +115,5 @@ SOUND_INTERCEPT_SWEEP = (1200, 2400, 0.08)  # Start Hz, end Hz, seconds
 SOUND_GAME_OVER_SWEEP = (440, 55, 1.0)      # Start Hz, end Hz, seconds
 SOUND_EXPLOSION_NOISE = (4000, 0.5)         # Noise step Hz, seconds
 SOUND_IMPACT_NOISE = (1200, 0.35)           # Noise step Hz, seconds
-SOUND_NAMES = ("launch", "explosion", "intercept", "impact", "game_over")
+SOUND_LASER_SWEEP = (1800, 300, 0.08)       # Start Hz, end Hz, seconds (rapid-fire shot)
+SOUND_NAMES = ("launch", "explosion", "intercept", "impact", "game_over", "laser")

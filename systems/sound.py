@@ -23,6 +23,7 @@ _RECIPES = {
     "intercept": (_SWEEP, SOUND_INTERCEPT_SWEEP),
     "impact": (_NOISE, SOUND_IMPACT_NOISE),
     "game_over": (_SWEEP, SOUND_GAME_OVER_SWEEP),
+    "laser": (_SWEEP, SOUND_LASER_SWEEP),
 }
 
 
