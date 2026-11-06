@@ -30,13 +30,13 @@ class IncomingMissile(GameEntity):
 class DefenseMissile(GameEntity):
     """Player-controlled defensive missile.
 
-    Flies in a straight line from the launcher to the clicked target at a
-    constant speed, stops exactly on the target and sets ``reached_target``
-    so the game can detonate it there.
+    Flies in a straight line from the launcher's muzzle to the clicked
+    target at a constant speed, stops exactly on the target and sets
+    ``reached_target`` so the game can detonate it there.
     """
 
     def __init__(self, target_point):
-        super().__init__(LAUNCHER_X_OFFSET, LAUNCHER_Y_OFFSET)
+        super().__init__(LAUNCHER_X, LAUNCHER_Y)
         self.target = pygame.math.Vector2(target_point.x, target_point.y)
         self.speed = DEFENSE_MISSILE_SPEED
         self.radius = 5

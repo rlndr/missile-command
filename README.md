@@ -57,6 +57,6 @@ Or, with `pygame` and `pytest` installed in your environment, `python -m pytest 
 
 ## Gameplay
 
-Your launcher sits in the top-left corner of the screen. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1. The bar under the launcher fills in orange while it reloads and turns yellow when it can fire again.
+Your launcher tower stands on the ground at the bottom centre of the screen, between the two halves of the city, and your missiles rise from its barrel. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1. The bar under the launcher fills in orange while it reloads and turns yellow when it can fire again.
 
 The game ends when all buildings are destroyed. Your final score and high score are displayed on the game over screen. Press SPACE to restart.
