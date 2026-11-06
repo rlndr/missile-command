@@ -94,3 +94,16 @@ HUD_MARGIN = 10                  # Gap in px between the HUD score and the top/r
 
 # High score
 HIGH_SCORE_MAX = 999_999_999  # Largest stored high score that is believed
+
+# Sound
+SOUND_SAMPLE_RATE = 22050        # Samples per second requested from the mixer
+SOUND_BUFFER_SIZE = 512          # Mixer buffer size in samples (low latency)
+SOUND_VOLUME = 0.25              # Peak amplitude as a fraction of full scale
+SOUND_FADE_TIME = 0.01           # Seconds of fade-out at the end of each square sweep
+SOUND_NOISE_SEED = 0x2B5D        # Non-zero 15-bit LFSR seed for noise bursts
+SOUND_LAUNCH_SWEEP = (330, 990, 0.15)       # Start Hz, end Hz, seconds
+SOUND_INTERCEPT_SWEEP = (1200, 2400, 0.08)  # Start Hz, end Hz, seconds
+SOUND_GAME_OVER_SWEEP = (440, 55, 1.0)      # Start Hz, end Hz, seconds
+SOUND_EXPLOSION_NOISE = (4000, 0.5)         # Noise step Hz, seconds
+SOUND_IMPACT_NOISE = (1200, 0.35)           # Noise step Hz, seconds
+SOUND_NAMES = ("launch", "explosion", "intercept", "impact", "game_over")

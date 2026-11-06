@@ -9,13 +9,16 @@ from entities.terrain import Explosion, ExplosionPool
 from utils.timer import GameTimer
 from systems.input_system import InputSystem
 from systems.score import ScoreSystem
+from systems.sound import SoundSystem, pre_init_mixer
 
 
 class MainGame:
     """Main game class that manages everything."""
     
     def __init__(self):
+        pre_init_mixer()
         pygame.init()
+        self.sound = SoundSystem()
         
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Missile Command Clone")
@@ -92,6 +95,9 @@ class MainGame:
         no time jump. Firing only works if play was running before and after.
         """
         state = self.state
+        if "toggle_mute" in actions:
+            self.sound.toggle_mute()
+
         if state in (STATE_START, STATE_GAME_OVER) and "start" in actions:
             self.start_game()
             self.state = STATE_PLAYING
@@ -140,6 +146,7 @@ class MainGame:
             missile = DefenseMissile(pygame.math.Vector2(target_point))
             self.defense_missiles.append(missile)
             self.base.start_cooldown()
+            self.sound.play("launch")
     
     def draw_missile(self, missile, color):
         """Draw a missile as a small circle."""
@@ -182,12 +189,16 @@ class MainGame:
             missile.update(dt)
 
         # Detonate defense missiles that reached their target this frame.
+        detonated = False
         for missile in self.defense_missiles:
             if missile.reached_target and not missile.is_destroyed:
                 explosion = self.explosion_pool.get_explosion(
                     missile.target.x, missile.target.y, is_player=True)
                 self.explosions.append(explosion)
                 missile.destroy()
+                detonated = True
+        if detonated:
+            self.sound.play("explosion")
 
         for explosion in self.explosions:
             explosion.update(dt)
@@ -258,6 +269,9 @@ class MainGame:
     def check_collisions(self):
         """Check all collisions and handle damage/effects."""
         
+        impacted = False
+        intercepted = False
+
         # Check incoming missiles hitting buildings
         for missile in self.incoming_missiles:
             if missile.is_destroyed:
@@ -279,6 +293,7 @@ class MainGame:
                         building.take_impact()
                         missile.destroy()
                         self.shake_intensity = SCREEN_SHAKE_BUILDING_HIT
+                        impacted = True
                         break
 
         # Player explosions destroy incoming missiles inside their current radius
@@ -294,6 +309,12 @@ class MainGame:
                     incoming.destroy()
                     self.score_system.add_missile_hit(MISSILE_INTERCEPT_POINTS)
                     self.shake_intensity = SCREEN_SHAKE_INTERCEPT
+                    intercepted = True
+
+        if impacted:
+            self.sound.play("impact")
+        if intercepted:
+            self.sound.play("intercept")
 
         # Destroyed buildings drop out of the city.
         self.buildings = [b for b in self.buildings if not b.is_destroyed]
@@ -312,6 +333,7 @@ class MainGame:
         if self.state == STATE_PLAYING and self.buildings_left == 0:
             self.switch_state(STATE_GAME_OVER)
             self.score_system.save_high_score()
+            self.sound.play("game_over")
 
     def start_game_loop(self):
         """Run the main loop in the current state until a ``"quit"`` action."""
@@ -362,6 +384,8 @@ class MainGame:
             ("Mouse Click: Launch defense missile", 36, COLOR_WHITE, mid + 50),
             ("SPACE: Start / Restart", 36, COLOR_WHITE, mid + 80),
             ("ESC: Pause / Resume", 36, COLOR_WHITE, mid + 110),
+            ("M: Unmute sound" if self.sound.muted else "M: Mute sound",
+             36, COLOR_WHITE, mid + 140),
         ]
         return header + controls + [(prompt, 48, COLOR_YELLOW, mid + 190)]
 
