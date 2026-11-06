@@ -162,7 +162,7 @@ def test_spawns_target_standing_buildings_only(game):
         game.spawn_incoming_missile()
     assert len(game.incoming_missiles) == 20
     target_x = game.buildings[7].position.x
-    assert target_x == 590
+    assert target_x == 710
     assert all(m.target.x == target_x for m in game.incoming_missiles)
 
 

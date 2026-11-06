@@ -11,8 +11,8 @@ import systems.game_loop
 import systems.score
 import utils.timer
 from entities import DefenseMissile, DefensiveBase
-from game.constants import (BASE_COOLDOWN_TIME, DT_DEFAULT, LAUNCHER_X_OFFSET,
-                            LAUNCHER_Y_OFFSET, STATE_GAME_OVER, STATE_PLAYING,
+from game.constants import (BASE_COOLDOWN_TIME, DT_DEFAULT, LAUNCHER_X,
+                            LAUNCHER_Y, STATE_GAME_OVER, STATE_PLAYING,
                             STATE_START)
 from systems.game_loop import MainGame
 
@@ -126,7 +126,7 @@ def test_start_game_keeps_the_same_launcher(start_screen_game):
     base = game.base
     game.start_game()
     assert game.base is base
-    assert base.position == Vector2(LAUNCHER_X_OFFSET, LAUNCHER_Y_OFFSET)
+    assert base.position == Vector2(LAUNCHER_X, LAUNCHER_Y)
 
 
 def test_base_reset_on_its_own():
@@ -158,7 +158,7 @@ def test_base_reset_on_its_own():
 def test_cooldown_still_works_in_a_game(main_game, monkeypatch):
     """Criterion 6: one shot per 1.5 s reload, checked just under and just over.
 
-    The first missile reaches (400, 300) after about 1.24 s and is filtered
+    The first missile reaches (400, 300) after about 0.57 s and is filtered
     out of ``defense_missiles``, so launches are counted with a recording
     ``DefenseMissile`` rather than by the length of the live list.
     """
