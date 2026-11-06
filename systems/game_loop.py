@@ -353,12 +353,19 @@ class MainGame:
                         missile.position.y <= building.position.y + building.height):
                         
                         # Building hit!
-                        explosion = self.explosion_pool.get_explosion(
-                            missile.position.x,
-                            missile.position.y
-                        )
-                        self.explosions.append(explosion)
                         building.take_impact()
+                        if building.is_destroyed:
+                            explosion = self.explosion_pool.get_explosion(
+                                building.position.x + building.width / 2,
+                                building.position.y + building.height / 2,
+                                is_building=True
+                            )
+                        else:
+                            explosion = self.explosion_pool.get_explosion(
+                                missile.position.x,
+                                missile.position.y
+                            )
+                        self.explosions.append(explosion)
                         missile.destroy()
                         self.shake_intensity = SCREEN_SHAKE_BUILDING_HIT
                         impacted = True
