@@ -25,7 +25,6 @@ from game.constants import (
     LAUNCHER_X,
     LAUNCHER_Y,
     SCREEN_HEIGHT,
-    SCREEN_SHAKE_INTERCEPT,
     SCREEN_WIDTH,
 )
 
@@ -210,7 +209,6 @@ def test_kill_radius(main_game):
         assert missile.is_destroyed is True
     for missile in outside:
         assert missile.is_destroyed is False
-    assert game.shake_intensity == SCREEN_SHAKE_INTERCEPT
 
 
 def test_uses_current_radius_not_max(main_game):
@@ -245,7 +243,6 @@ def test_non_player_explosions_do_not_intercept(main_game):
 
     game.check_collisions()
     assert missile.is_destroyed is False
-    assert game.shake_intensity == 0
 
 
 def test_no_contact_detonation(main_game):
@@ -292,7 +289,6 @@ def test_end_to_end_intercept(main_game):
             break
     assert killed_on is not None
     assert 34 <= killed_on <= 41
-    assert game.shake_intensity == SCREEN_SHAKE_INTERCEPT
     game.draw()
 
 

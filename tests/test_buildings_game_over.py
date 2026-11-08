@@ -16,7 +16,6 @@ from entities import Building, IncomingMissile
 from game.constants import (
     COLOR_GRAY,
     DT_DEFAULT,
-    SCREEN_SHAKE_BUILDING_HIT,
     STATE_GAME_OVER,
     STATE_PAUSED,
     STATE_PLAYING,
@@ -102,7 +101,6 @@ def test_impact_through_the_game(game):
     missile = _impact(game, game.buildings[0])
     assert missile.is_destroyed
     assert [b.health_current for b in game.buildings] == [66] + [100] * 7
-    assert game.shake_intensity == SCREEN_SHAKE_BUILDING_HIT
     assert len(game.explosions) == 1
     assert game.explosions[0].is_player is False
 

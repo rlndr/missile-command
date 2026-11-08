@@ -167,13 +167,12 @@ def _snapshot(game, missile, explosion):
         "active": explosion.is_active,
         "cooldown": game.base.cooldown_time,
         "buildings": len(game.buildings),
-        "shake": game.shake_intensity,
     }
 
 
 # Criterion 7
 def test_pausing_and_drawing_change_nothing(main_game):
-    """Ten paused frames leave time, score, entities, cooldown and shake untouched."""
+    """Ten paused frames leave time, score, entities and cooldown untouched."""
     missile = _park(main_game, *MISSILE)
     missile.trail.extend([Vector2(100, 190), Vector2(100, 196)])
     explosion = main_game.explosion_pool.get_explosion(300, 300, is_player=True)

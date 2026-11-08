@@ -82,11 +82,6 @@ BUILDING_EXPLOSION_LAYERS = ((1.0, COLOR_RED), (0.7, COLOR_ORANGE), (0.4, COLOR_
 BUILDING_EXPLOSION_FLICKER_SPEED = 40.0
 BUILDING_EXPLOSION_FLICKER_AMOUNT = 0.12
 
-# Screen shake
-SCREEN_SHAKE_BUILDING_HIT = 5    # Intensity when an incoming missile hits a building
-SCREEN_SHAKE_INTERCEPT = 8       # Intensity when a defence missile intercepts an incoming one
-SCREEN_SHAKE_DECAY_RATE = 2.0    # Intensity units lost per second
-
 # Launcher tower, standing on the ground at the bottom centre
 LAUNCHER_WIDTH = 60          # Tower body width
 LAUNCHER_HEIGHT = 50         # Tower body height

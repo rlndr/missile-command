@@ -163,11 +163,10 @@ def test_space_restarts_from_game_over(game, monkeypatch):
     game.check_game_over()
     assert game.state == STATE_GAME_OVER and saves[0] == 1
 
-    game.shake_intensity = 5
     game.handle_actions({"start": True})
     _assert_fresh_city(game)
     assert game.score_system.score == 0 and game.score_system.high_score == 120
-    assert game.shake_intensity == 0 and saves[0] == 1
+    assert saves[0] == 1
     assert game.incoming_missiles == [] and game.defense_missiles == [] and game.explosions == []
     game.check_game_over()
     assert game.state == STATE_PLAYING

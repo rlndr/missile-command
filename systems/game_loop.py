@@ -1,6 +1,5 @@
 """Main game class - orchestrates all systems."""
 
-import math
 import pygame
 import random
 from game.constants import *
@@ -47,12 +46,6 @@ class MainGame:
         self.starting_buildings_count = 8
         
         self.game_time = 0.0
-        self.shake_intensity = 0
-
-        # Reusable full-screen layer for shifting the battlefield during screen shake
-        self.battlefield_surface = pygame.Surface(
-            (SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA
-        )
 
         # Full-screen layer that dims the frozen battlefield while paused
         self.pause_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -84,7 +77,6 @@ class MainGame:
         # Reset and track score at game start
         self.score_system.reset()
         self.last_spawn_time = 0.0
-        self.shake_intensity = 0
     
     def switch_state(self, new_state):
         """Switch to a different game state."""
@@ -171,11 +163,9 @@ class MainGame:
             self.base.start_cooldown()
             self.sound.play(sound_name)
     
-    def draw_missile(self, missile, color, surface=None):
-        """Draw a missile as a small circle on ``surface`` (defaults to ``self.screen``)."""
-        if surface is None:
-            surface = self.screen
-        pygame.draw.circle(surface, color,
+    def draw_missile(self, missile, color):
+        """Draw a missile as a small circle."""
+        pygame.draw.circle(self.screen, color,
                           (int(missile.position.x), int(missile.position.y)),
                           missile.radius)
     
@@ -246,22 +236,6 @@ class MainGame:
         for explosion in self.explosions:
             explosion.update(dt)
 
-        self.shake_intensity = max(0, self.shake_intensity - dt * SCREEN_SHAKE_DECAY_RATE)
-    
-    def get_shake_offset(self):
-        """Return a random (shake_x, shake_y) offset for the current shake.
-
-        ``shake_intensity`` decays as a float, so the range bound is rounded up
-        with ``math.ceil`` to an int before it reaches ``random.randint``. Each
-        component is an int in ``[-A, A]`` where ``A = ceil(shake_intensity)``;
-        returns ``(0, 0)`` when there is no shake.
-        """
-        if self.shake_intensity <= 0:
-            return (0, 0)
-        amplitude = math.ceil(self.shake_intensity)
-        return (random.randint(-amplitude, amplitude),
-                random.randint(-amplitude, amplitude))
-
     def hud_score_text(self):
         """Return the in-play HUD score line, e.g. ``"SCORE: 1,234"``."""
         return f"SCORE: {self.score_system.score:,}"
@@ -310,41 +284,31 @@ class MainGame:
             color = (COLOR_BLUE[0], intensity, COLOR_BLUE[2])
             pygame.draw.line(self.screen, color, (0, y), (SCREEN_WIDTH, y))
 
-        shake_x, shake_y = self.get_shake_offset()
-        if (shake_x, shake_y) != (0, 0):
-            target = self.battlefield_surface
-            target.fill((*COLOR_BLACK, 0))
-        else:
-            target = self.screen
-
-        pygame.draw.rect(target, COLOR_GROUND,
+        pygame.draw.rect(self.screen, COLOR_GROUND,
                          pygame.Rect(0, GROUND_Y, SCREEN_WIDTH, GROUND_HEIGHT))
 
-        self.base.draw_base(target)
+        self.base.draw_base(self.screen)
 
         sorted_buildings = sorted(self.buildings, key=lambda b: -b.position.y)
         for building in sorted_buildings:
             if not building.is_destroyed:
-                building.draw_building(target)
+                building.draw_building(self.screen)
 
         # Enemy trails go under every missile head and explosion
         for missile in list(self.incoming_missiles):
             if not missile.is_destroyed:
-                missile.draw_trail(target)
+                missile.draw_trail(self.screen)
 
         for missile in list(self.defense_missiles):
-            self.draw_missile(missile, COLOR_YELLOW, target)
+            self.draw_missile(missile, COLOR_YELLOW)
 
         for missile in list(self.incoming_missiles):
             if not missile.is_destroyed:
-                self.draw_missile(missile, COLOR_RED, target)
+                self.draw_missile(missile, COLOR_RED)
 
         for explosion in list(self.explosions):
             if explosion.is_active:
-                explosion.draw_explosion(target)
-
-        if target is not self.screen:
-            self.screen.blit(target, (shake_x, shake_y))
+                explosion.draw_explosion(self.screen)
 
         self.draw_hud()
 
@@ -385,7 +349,6 @@ class MainGame:
                             )
                         self.explosions.append(explosion)
                         missile.destroy()
-                        self.shake_intensity = SCREEN_SHAKE_BUILDING_HIT
                         impacted = True
                         break
 
@@ -401,7 +364,6 @@ class MainGame:
                 if explosion.position.distance_to(incoming.position) <= explosion.radius:
                     incoming.destroy()
                     self.score_system.add_missile_hit(MISSILE_INTERCEPT_POINTS)
-                    self.shake_intensity = SCREEN_SHAKE_INTERCEPT
                     intercepted = True
 
         if impacted:
