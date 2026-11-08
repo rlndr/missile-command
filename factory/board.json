@@ -291,7 +291,7 @@
       "id": "017-pause-overlay",
       "title": "Pause shows the frozen battlefield, dimmed, with the keys that work while paused",
       "branch": "factory/017-pause-overlay",
-      "stage": "needs-human",
+      "stage": "merged",
       "round": 1,
       "reviews": {
         "security": "PASS",
@@ -301,8 +301,42 @@
       },
       "history": [],
       "builder": "adb11061f1e609521",
-      "note": "Paused by human: all 4 reviews PASS, approver not run. Trial-merge vs main (has 016) before merging.",
-      "updated": "2026-11-06T02:45:13Z"
+      "note": "Approved by human",
+      "updated": "2026-11-06T02:57:08Z"
+    },
+    {
+      "id": "018-building-explosions",
+      "title": "Fix building-in-explosion distance check and play a fiery explosion when a building is destroyed",
+      "branch": "factory/018-building-explosions",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "c8371c44-359e-44e8-8c18-bddcc52e242c",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T03:56:40Z"
+    },
+    {
+      "id": "019-wave-tick-tock",
+      "title": "Play a synthesised tick-tock sound when the wave changes",
+      "branch": "factory/019-wave-tick-tock",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "history": [],
+      "builder": "b9360f9e-5402-4d2e-9094-cf466105b52d",
+      "note": "Auto-approved",
+      "updated": "2026-11-06T04:15:35Z"
     }
   ]
 }
