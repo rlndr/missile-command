@@ -49,6 +49,11 @@ class MainGame:
         self.game_time = 0.0
         self.shake_intensity = 0
 
+        # Reusable full-screen layer for shifting the battlefield during screen shake
+        self.battlefield_surface = pygame.Surface(
+            (SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA
+        )
+
         # Full-screen layer that dims the frozen battlefield while paused
         self.pause_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         self.pause_overlay.fill((*PAUSE_OVERLAY_COLOR, PAUSE_OVERLAY_ALPHA))
@@ -166,9 +171,11 @@ class MainGame:
             self.base.start_cooldown()
             self.sound.play(sound_name)
     
-    def draw_missile(self, missile, color):
-        """Draw a missile as a small circle."""
-        pygame.draw.circle(self.screen, color,
+    def draw_missile(self, missile, color, surface=None):
+        """Draw a missile as a small circle on ``surface`` (defaults to ``self.screen``)."""
+        if surface is None:
+            surface = self.screen
+        pygame.draw.circle(surface, color,
                           (int(missile.position.x), int(missile.position.y)),
                           missile.radius)
     
@@ -302,34 +309,42 @@ class MainGame:
             intensity = int(COLOR_BLUE[1] + (y / SCREEN_HEIGHT) * (COLOR_DARK_BLUE[1] - COLOR_BLUE[1]))
             color = (COLOR_BLUE[0], intensity, COLOR_BLUE[2])
             pygame.draw.line(self.screen, color, (0, y), (SCREEN_WIDTH, y))
-        
-        pygame.draw.rect(self.screen, COLOR_GROUND,
-                         pygame.Rect(0, GROUND_Y, SCREEN_WIDTH, GROUND_HEIGHT))
 
         shake_x, shake_y = self.get_shake_offset()
-        
-        self.base.draw_base(self.screen)
-        
+        if (shake_x, shake_y) != (0, 0):
+            target = self.battlefield_surface
+            target.fill((*COLOR_BLACK, 0))
+        else:
+            target = self.screen
+
+        pygame.draw.rect(target, COLOR_GROUND,
+                         pygame.Rect(0, GROUND_Y, SCREEN_WIDTH, GROUND_HEIGHT))
+
+        self.base.draw_base(target)
+
         sorted_buildings = sorted(self.buildings, key=lambda b: -b.position.y)
         for building in sorted_buildings:
             if not building.is_destroyed:
-                building.draw_building(self.screen)
-        
+                building.draw_building(target)
+
         # Enemy trails go under every missile head and explosion
         for missile in list(self.incoming_missiles):
             if not missile.is_destroyed:
-                missile.draw_trail(self.screen)
+                missile.draw_trail(target)
 
         for missile in list(self.defense_missiles):
-            self.draw_missile(missile, COLOR_YELLOW)
-        
+            self.draw_missile(missile, COLOR_YELLOW, target)
+
         for missile in list(self.incoming_missiles):
             if not missile.is_destroyed:
-                self.draw_missile(missile, COLOR_RED)
-        
+                self.draw_missile(missile, COLOR_RED, target)
+
         for explosion in list(self.explosions):
             if explosion.is_active:
-                explosion.draw_explosion(self.screen)
+                explosion.draw_explosion(target)
+
+        if target is not self.screen:
+            self.screen.blit(target, (shake_x, shake_y))
 
         self.draw_hud()
 
