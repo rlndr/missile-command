@@ -12,6 +12,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 - Enemy missiles spawn faster over the first minute, then 10% more often after every further full minute of play
 - While the launcher's rapid-fire window is open, enemy missiles come twice as often
 - Enemy missiles leave a short exhaust trail that fades from orange to grey smoke
+- Enemy missiles aim anywhere across a standing building; one that misses the city hits the ground in a small blast that does no damage
 - Destroyed buildings erupt in a large, flickering red/orange/yellow fireball that fades out over the city
 
 ## Requirements
@@ -62,7 +63,7 @@ Or, with `pygame` and `pytest` installed in your environment, `python -m pytest 
 
 ## Gameplay
 
-Your launcher tower stands on the ground at the bottom centre of the screen, between the two halves of the city, and your missiles rise from its barrel. Enemy missiles fall from the top of the screen toward your buildings along the bottom. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1. The bar under the launcher fills in orange while it reloads and turns yellow when it can fire again. Every 60 seconds of play (at 1:00, 2:00, 3:00, ...) the launcher turns red for 10 seconds and can fire every 0.1 s, with a laser sound on each shot. The retro-style sound effects for launches, explosions, intercepts, city hits, wave changes and game over are generated in code from square waves and noise, with no audio files.
+Your launcher tower stands on the ground at the bottom centre of the screen, between the two halves of the city, and your missiles rise from its barrel. Enemy missiles fall from the top of the screen toward random points on your buildings along the bottom. An enemy missile that misses the city hits the ground and goes off in a small blast that does no damage. Click to fire a counter-missile — when it reaches the target point it explodes, destroying any incoming missiles caught in the blast radius. Each enemy missile destroyed by your explosion scores `MISSILE_INTERCEPT_POINTS` (10) points, and every full second survived scores 1. The bar under the launcher fills in orange while it reloads and turns yellow when it can fire again. Every 60 seconds of play (at 1:00, 2:00, 3:00, ...) the launcher turns red for 10 seconds and can fire every 0.1 s, with a laser sound on each shot. The retro-style sound effects for launches, explosions, intercepts, city hits, wave changes and game over are generated in code from square waves and noise, with no audio files.
 
 The game ends when all buildings are destroyed. Your final score and high score are displayed on the game over screen. Press SPACE to restart.
 

@@ -118,10 +118,12 @@ class MainGame:
         standing = [b for b in self.buildings if not b.is_destroyed]
         if standing:
             target_building = random.choice(standing)
-            target_point = pygame.math.Vector2(target_building.position.x,
-                           SCREEN_HEIGHT - 30 - random.randint(0, 50))
+            target_point = pygame.math.Vector2(
+                random.uniform(target_building.position.x,
+                               target_building.position.x + target_building.width),
+                random.uniform(target_building.position.y, GROUND_Y))
         else:
-            target_point = pygame.math.Vector2(random.randint(100, SCREEN_WIDTH - 100), SCREEN_HEIGHT)
+            target_point = pygame.math.Vector2(random.randint(100, SCREEN_WIDTH - 100), GROUND_Y)
 
         missile = IncomingMissile(target_point)
         self.incoming_missiles.append(missile)
@@ -371,6 +373,17 @@ class MainGame:
                     incoming.destroy()
                     self.score_system.add_missile_hit(MISSILE_INTERCEPT_POINTS)
                     intercepted = True
+
+        # Missiles that reach the ground without hitting anything burst there harmlessly
+        for missile in self.incoming_missiles:
+            if missile.is_destroyed:
+                continue
+
+            if missile.position.y >= GROUND_Y:
+                missile.destroy()
+                self.explosions.append(self.explosion_pool.get_explosion(
+                    missile.position.x, GROUND_Y, is_ground=True))
+                impacted = True
 
         if impacted:
             self.sound.play("impact")
