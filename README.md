@@ -9,7 +9,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 - Buildings are damaged only by enemy missile impacts (3 hits destroy one); your own explosions never harm the city
 - Score tracks missile hits and survival time, with high score persistence
 - A wave counter next to the score goes up by one every 30 seconds of play, with a tick-tock sound on each wave change
-- Difficulty ramps up continuously as the game progresses
+- Enemy missiles spawn faster over the first minute, then 10% more often after every further full minute of play
 - While the launcher's rapid-fire window is open, enemy missiles come twice as often
 - Enemy missiles leave a short exhaust trail that fades from orange to grey smoke
 - Destroyed buildings erupt in a large, flickering red/orange/yellow fireball that fades out over the city
