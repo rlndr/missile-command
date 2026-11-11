@@ -59,6 +59,8 @@ RAPID_FIRE_COOLDOWN_TIME = 0.1          # Seconds between launches during the wi
 LAUNCHER_RAPID_FIRE_COLOR = COLOR_RED   # Tower body and barrel during the window
 
 # Building settings
+BUILDING_INDUSTRIAL_COLOR = (150, 100, 60)  # Rust brown industrial blocks
+BUILDING_MILITARY_COLOR = (90, 110, 130)    # Steel blue-grey military towers
 BUILDING_TYPES = {
     "residential": {
         "color": COLOR_GRAY,
@@ -67,8 +69,31 @@ BUILDING_TYPES = {
         "damage_threshold": 3,  # Number of explosions to destroy
         "width": 60,
         "height": 40
+    },
+    "industrial": {
+        "color": BUILDING_INDUSTRIAL_COLOR,
+        "health_max": 150,
+        "score_value": 75,
+        "damage_threshold": 4,  # Number of explosions to destroy
+        "width": 60,
+        "height": 30
+    },
+    "military": {
+        "color": BUILDING_MILITARY_COLOR,
+        "health_max": 200,
+        "score_value": 100,
+        "damage_threshold": 5,  # Number of explosions to destroy
+        "width": 44,
+        "height": 56
     }
 }
+
+# Building health bar, shown while health is between 50% and 100%
+HEALTH_BAR_HEALTHY_COLOR = (60, 200, 60)    # Green fill while healthy
+HEALTH_BAR_DAMAGED_COLOR = COLOR_YELLOW     # Yellow fill once damaged
+HEALTH_BAR_CRITICAL_COLOR = COLOR_RED       # Red fill when critical
+HEALTH_BAR_HEALTHY_ABOVE = 0.75             # Health strictly above this is healthy
+HEALTH_BAR_DAMAGED_ABOVE = 0.65             # Strictly above this (and not healthy) is damaged
 
 # City layout: two mirrored groups of buildings either side of the launcher
 CITY_EDGE_MARGIN = 30   # Gap in px between the outer buildings and the screen edges
@@ -78,6 +103,9 @@ BUILDING_SPACING = 80   # Px from one building's left edge to the next in a grou
 EXPLOSION_MAX_RADIUS = 80
 EXPLOSION_EXPANSION_TIME = 0.5
 EXPLOSION_SHRINK_TIME = 0.3
+GROUND_IMPACT_MAX_RADIUS = 24           # Small, harmless blast where a missile hits the ground
+GROUND_IMPACT_EXPANSION_TIME = 0.2      # Seconds for a ground blast to grow to full size
+GROUND_IMPACT_SHRINK_TIME = 0.25        # Seconds for a ground blast to shrink away
 BUILDING_EXPLOSION_MAX_RADIUS = 110
 BUILDING_EXPLOSION_EXPANSION_TIME = 0.4
 BUILDING_EXPLOSION_SHRINK_TIME = 0.5

@@ -16,6 +16,7 @@ from entities import Building, IncomingMissile
 from game.constants import (
     COLOR_GRAY,
     DT_DEFAULT,
+    GROUND_Y,
     STATE_GAME_OVER,
     STATE_PAUSED,
     STATE_PLAYING,
@@ -153,15 +154,17 @@ def test_buildings_left_counts_standing_buildings(game):
 
 
 def test_spawns_target_standing_buildings_only(game):
-    """Criterion 8: only the last standing building is ever targeted."""
+    """Criterion 8: only the last standing building is ever targeted, across its rect."""
     for building in game.buildings[:7]:
         building.is_destroyed = True
     for _ in range(20):
         game.spawn_incoming_missile()
     assert len(game.incoming_missiles) == 20
-    target_x = game.buildings[7].position.x
-    assert target_x == 710
-    assert all(m.target.x == target_x for m in game.incoming_missiles)
+    assert game.buildings[7].position.x == 710
+    for m in game.incoming_missiles:
+        assert 710 <= m.target.x <= 770
+        assert 540 <= m.target.y <= GROUND_Y
+    assert len({m.target.x for m in game.incoming_missiles}) > 1
 
 
 def test_city_redraws_without_destroyed_building(game):

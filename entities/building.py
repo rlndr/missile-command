@@ -58,6 +58,14 @@ class Building(GameEntity):
         """Check if building health has reached critical state."""
         return self.health_current <= (self.health_max * 0.3)
     
+    def health_bar_color(self):
+        """Return the health bar fill colour: green when healthy, yellow when damaged, red when critical."""
+        if self.health > HEALTH_BAR_HEALTHY_ABOVE:
+            return HEALTH_BAR_HEALTHY_COLOR
+        if self.health > HEALTH_BAR_DAMAGED_ABOVE:
+            return HEALTH_BAR_DAMAGED_COLOR
+        return HEALTH_BAR_CRITICAL_COLOR
+
     def draw_building(self, screen, color=None):
         """Draw building with optional damage visualization."""
         
@@ -112,7 +120,5 @@ class Building(GameEntity):
             
             # Health fill
             health_fill_width = int(bar_width * self.health)
-            pygame.draw.rect(screen, 
-                           (255 if self.health > 0.7 else 
-                            150 if self.health > 0.4 else 50),
+            pygame.draw.rect(screen, self.health_bar_color(),
                            (bar_x, bar_y, health_fill_width, bar_height))

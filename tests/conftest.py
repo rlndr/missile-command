@@ -21,8 +21,9 @@ import gc  # noqa: E402
 import pygame  # noqa: E402
 import pytest  # noqa: E402
 
+import systems.game_loop  # noqa: E402
 import systems.score  # noqa: E402
-from game.constants import STATE_PLAYING  # noqa: E402
+from game.constants import BUILDING_TYPES, STATE_PLAYING  # noqa: E402
 from systems.game_loop import MainGame  # noqa: E402
 
 
@@ -34,12 +35,21 @@ def main_game(monkeypatch, tmp_path):
     before ``MainGame()`` is built, because ``ScoreSystem.__init__`` reads it.
     ``last_spawn_time`` is pushed to infinity so ``update()`` never spawns a
     random incoming missile during a test.
+
+    The starting city is pinned to residential buildings: the fixture
+    monkeypatches ``systems.game_loop.BUILDING_TYPES`` to a dict holding only
+    "residential" before ``start_game()``, for the whole test, so later
+    ``start_game()`` calls are residential too. To get the full set back,
+    monkeypatch the name back to ``game.constants.BUILDING_TYPES`` and call
+    ``start_game()`` again.
     """
     # Collect any stale game from an earlier test now, so its __del__
     # (which calls pygame.quit()) can't fire in the middle of this test.
     gc.collect()
 
     monkeypatch.setattr(systems.score, "CONFIG_PATH", str(tmp_path / "config.json"))
+    monkeypatch.setattr(systems.game_loop, "BUILDING_TYPES",
+                        {"residential": BUILDING_TYPES["residential"]})
 
     game = MainGame()
     game.start_game()

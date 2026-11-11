@@ -12,7 +12,7 @@ class IncomingMissile(GameEntity):
 
     def __init__(self, target_point):
         super().__init__(random.randint(50, SCREEN_WIDTH - 50), -50)
-        self.target = pygame.math.Vector2(target_point.x, target_point.y + 50)
+        self.target = pygame.math.Vector2(target_point.x, target_point.y)
         self.speed = INCOMING_MISSILE_SPEED
         self.radius = 8
         
