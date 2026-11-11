@@ -26,8 +26,11 @@ DT_DEFAULT = 1.0 / 60  # Delta time for 60 FPS
 # Difficulty settings
 BASE_SPAWN_INTERVAL = 3.5  # Seconds between incoming missile spawns
 DIFFICULTY_RAMP_RATE = 0.05  # How much spawn rate decreases per second
-MIN_SPAWN_INTERVAL = 2.0   # Fastest we'll ever spawn enemies
+MIN_SPAWN_INTERVAL = 2.0   # Floors the early ramp; the per-minute steps then go below it
 RAPID_FIRE_SPAWN_RATE_MULTIPLIER = 2  # Enemy spawn rate multiplier while rapid fire is on
+SPAWN_STEP_DURATION = 60.0  # Seconds of play per difficulty step
+SPAWN_STEP_MULTIPLIER = 1.1  # Spawn rate multiplier per completed step (compounding)
+HARD_MIN_SPAWN_INTERVAL = 0.5  # Smallest gap between spawns before rapid fire is applied
 
 # Missile speeds (pixels per second)
 INCOMING_MISSILE_SPEED = 200

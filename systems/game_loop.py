@@ -129,15 +129,21 @@ class MainGame:
     def current_spawn_interval(self):
         """Return the seconds between incoming missile spawns for this frame.
 
-        The ramp is floored at ``MIN_SPAWN_INTERVAL`` first, then divided by
+        The ramp is floored at ``MIN_SPAWN_INTERVAL`` first. Each completed
+        ``SPAWN_STEP_DURATION`` of ``game_time`` then divides it by a further
+        ``SPAWN_STEP_MULTIPLIER`` (compounding), down to
+        ``HARD_MIN_SPAWN_INTERVAL``. Last, it is divided by
         ``RAPID_FIRE_SPAWN_RATE_MULTIPLIER`` while ``rapid_fire_active()`` is
-        true, so the window can go below the floor.
+        true, so the window can go below the hard minimum.
         """
-        base = max(MIN_SPAWN_INTERVAL,
+        ramp = max(MIN_SPAWN_INTERVAL,
                    BASE_SPAWN_INTERVAL / (self.game_time / 60.0 + 1.0))
+        steps = int(self.game_time // SPAWN_STEP_DURATION)
+        interval = max(HARD_MIN_SPAWN_INTERVAL,
+                       ramp / SPAWN_STEP_MULTIPLIER ** steps)
         if self.rapid_fire_active():
-            return base / RAPID_FIRE_SPAWN_RATE_MULTIPLIER
-        return base
+            return interval / RAPID_FIRE_SPAWN_RATE_MULTIPLIER
+        return interval
     
     def spawn_new_building(self):
         """Spawn a new random building at a suitable position."""

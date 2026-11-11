@@ -1,8 +1,9 @@
 """Tests for doubled enemy spawns during the rapid-fire window (job 016).
 
 While ``MainGame.rapid_fire_active()`` is true, ``current_spawn_interval()``
-divides the floored spawn ramp by ``RAPID_FIRE_SPAWN_RATE_MULTIPLIER``, so the
-window gets twice as many incoming missiles. Each spawn still makes one
+divides the floored, per-minute-stepped spawn interval by
+``RAPID_FIRE_SPAWN_RATE_MULTIPLIER``, so the window gets twice as many incoming
+missiles. Each spawn still makes one
 missile and one ``update()`` still spawns at most one.
 """
 
@@ -58,18 +59,18 @@ def test_spawn_rate_multiplier_constant():
     (30.0, pytest.approx(3.5 / 1.5)),
     (45.0, 2.0),
     (59.99, 2.0),
-    (70.0, 2.0),
-    (100.0, 2.0),
+    (70.0, pytest.approx(2.0 / 1.1)),
+    (100.0, pytest.approx(2.0 / 1.1)),
 ])
 def test_interval_outside_window_is_the_normal_ramp(main_game, t, expected):
-    """Outside the window the interval is the ramped-and-floored value."""
+    """Outside the window the interval is the ramped, floored and stepped value."""
     assert interval_at(main_game, t) == expected
 
 
 @pytest.mark.parametrize("t", [60.0, 65.0, 69.99])
 def test_interval_inside_window_is_halved_after_floor(main_game, t):
-    """Inside the window the floored 2.0 s is halved to 1.0 s."""
-    assert interval_at(main_game, t) == 1.0
+    """Inside the first window the floored 2.0 s, stepped once, is halved."""
+    assert interval_at(main_game, t) == pytest.approx(2.0 / 1.1 / 2)
 
 
 # 3. Rapid fire read only through rapid_fire_active()
@@ -82,9 +83,9 @@ def test_interval_multiplier_applies_to_ramped_value(main_game, monkeypatch):
 
 
 def test_interval_ignores_game_time_when_rapid_fire_forced_off(main_game, monkeypatch):
-    """Forcing rapid fire off inside the 013 window gives the normal 2.0 s."""
+    """Forcing rapid fire off inside the 013 window gives the normal stepped interval."""
     monkeypatch.setattr(main_game, "rapid_fire_active", lambda: False)
-    assert interval_at(main_game, 65.0) == 2.0
+    assert interval_at(main_game, 65.0) == pytest.approx(2.0 / 1.1)
 
 
 def test_interval_follows_repeating_window_rule(main_game, monkeypatch):
@@ -93,10 +94,10 @@ def test_interval_follows_repeating_window_rule(main_game, monkeypatch):
     monkeypatch.setattr(
         game, "rapid_fire_active",
         lambda: game.game_time >= 60.0 and (game.game_time - 60.0) % 60.0 < 10.0)
-    assert interval_at(game, 125.0) == 1.0
-    assert interval_at(game, 185.0) == 1.0
-    assert interval_at(game, 100.0) == 2.0
-    assert interval_at(game, 130.0) == 2.0
+    assert interval_at(game, 125.0) == pytest.approx(2.0 / 1.1**2 / 2)
+    assert interval_at(game, 185.0) == pytest.approx(2.0 / 1.1**3 / 2)
+    assert interval_at(game, 100.0) == pytest.approx(2.0 / 1.1)
+    assert interval_at(game, 130.0) == pytest.approx(2.0 / 1.1**2)
 
 
 def test_interval_code_has_no_window_time_logic():
