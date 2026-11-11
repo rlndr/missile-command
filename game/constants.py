@@ -92,6 +92,7 @@ LAUNCHER_BARREL_WIDTH = 8    # Barrel on top of the body
 LAUNCHER_BARREL_HEIGHT = 16
 LAUNCHER_X = SCREEN_WIDTH // 2                                    # Muzzle x (top centre of the barrel)
 LAUNCHER_Y = GROUND_Y - LAUNCHER_HEIGHT - LAUNCHER_BARREL_HEIGHT  # Muzzle y; defense missiles start here
+LAUNCHER_STUN_DURATION = 3.0  # Seconds the launcher stays offline after a direct hit
 
 # Game states
 STATE_START = "start"
