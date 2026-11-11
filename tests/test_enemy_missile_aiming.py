@@ -141,7 +141,7 @@ def test_missile_flies_through_target(target):
 
 def test_ground_impact_on_ground_line(game):
     """Criterion 6: a missile on the ground line bursts in one small ground blast."""
-    missile = _park_missile(game, 400, GROUND_Y)
+    missile = _park_missile(game, 350, GROUND_Y)
     game.check_collisions()
     assert missile.is_destroyed
     assert len(game.explosions) == 1
@@ -149,24 +149,24 @@ def test_ground_impact_on_ground_line(game):
     assert exp.is_ground is True
     assert exp.is_player is False
     assert exp.is_building is False
-    assert exp.position == Vector2(400, GROUND_Y)
+    assert exp.position == Vector2(350, GROUND_Y)
     assert exp.max_radius == GROUND_IMPACT_MAX_RADIUS
     assert GROUND_IMPACT_MAX_RADIUS < EXPLOSION_MAX_RADIUS
 
 
 def test_ground_impact_below_ground(game):
     """Criterion 7: a missile past the ground line bursts on the ground line."""
-    missile = _park_missile(game, 400, GROUND_Y + 10)
+    missile = _park_missile(game, 350, GROUND_Y + 10)
     game.check_collisions()
     assert missile.is_destroyed
     assert len(game.explosions) == 1
     assert game.explosions[0].is_ground is True
-    assert game.explosions[0].position == Vector2(400, GROUND_Y)
+    assert game.explosions[0].position == Vector2(350, GROUND_Y)
 
 
 def test_no_ground_impact_above_ground(game):
     """Criterion 8: a missile one pixel above the ground is left alone."""
-    missile = _park_missile(game, 400, GROUND_Y - 1)
+    missile = _park_missile(game, 350, GROUND_Y - 1)
     game.check_collisions()
     assert not missile.is_destroyed
     assert game.explosions == []
@@ -185,11 +185,11 @@ def test_building_hit_beats_ground_impact(game):
 
 def test_intercept_beats_ground_impact(game):
     """Criterion 10: a missile on the ground inside a player blast is intercepted."""
-    blast = game.explosion_pool.get_explosion(400, GROUND_Y, is_player=True)
+    blast = game.explosion_pool.get_explosion(350, GROUND_Y, is_player=True)
     blast.radius = 20
     game.explosions.append(blast)
     score_before = game.score_system.score
-    missile = _park_missile(game, 400, GROUND_Y)
+    missile = _park_missile(game, 350, GROUND_Y)
     game.check_collisions()
     assert missile.is_destroyed
     assert game.score_system.score == score_before + MISSILE_INTERCEPT_POINTS
@@ -198,7 +198,7 @@ def test_intercept_beats_ground_impact(game):
 
 def test_ground_blast_is_harmless(game):
     """Criterion 11: a ground blast at full size neither intercepts, scores nor damages."""
-    _park_missile(game, 400, GROUND_Y)
+    _park_missile(game, 350, GROUND_Y)
     game.check_collisions()
     blast = _ground_explosions(game)[0]
     while blast.elapsed < GROUND_IMPACT_EXPANSION_TIME - 1e-9:
@@ -207,7 +207,7 @@ def test_ground_blast_is_harmless(game):
 
     score_before = game.score_system.score
     healths_before = _healths(game)
-    second = _park_missile(game, 400 + 10, GROUND_Y - 5)
+    second = _park_missile(game, 350 + 10, GROUND_Y - 5)
     assert blast.position.distance_to(second.position) <= blast.radius
     game.check_collisions()
     assert not second.is_destroyed
@@ -221,8 +221,8 @@ def test_ground_blast_is_harmless(game):
 def test_ground_impacts_play_one_impact(spy):
     """Criterion 12: two ground impacts in one call play ``"impact"`` once."""
     game, calls = spy
-    _park_missile(game, 380, GROUND_Y)
-    _park_missile(game, 420, GROUND_Y)
+    _park_missile(game, 340, GROUND_Y)
+    _park_missile(game, 360, GROUND_Y)
     game.check_collisions()
     assert calls == ["impact"]
     assert len(_ground_explosions(game)) == 2
@@ -233,7 +233,7 @@ def test_ground_impacts_play_one_impact(spy):
 def test_ground_and_building_hit_play_one_impact(spy):
     """Criterion 12: a ground impact and a building hit together play ``"impact"`` once."""
     game, calls = spy
-    _park_missile(game, 400, GROUND_Y)
+    _park_missile(game, 350, GROUND_Y)
     _park_missile(game, 60, 560)
     game.check_collisions()
     assert calls == ["impact"]
@@ -248,7 +248,7 @@ def test_ground_and_building_hit_play_one_impact(spy):
 
 def test_ground_blast_expires(game):
     """Criterion 13: a ground blast is gone just after its expand and shrink time."""
-    _park_missile(game, 400, GROUND_Y)
+    _park_missile(game, 350, GROUND_Y)
     game.check_collisions()
     total = 0.0
     while total <= GROUND_IMPACT_EXPANSION_TIME + GROUND_IMPACT_SHRINK_TIME:
@@ -259,7 +259,7 @@ def test_ground_blast_expires(game):
 
 def test_ground_blast_freezes_while_paused(game, monkeypatch):
     """Criterion 13: the paused game loop doesn't age a ground blast."""
-    _park_missile(game, 400, GROUND_Y)
+    _park_missile(game, 350, GROUND_Y)
     game.check_collisions()
     for _ in range(5):
         game.update(DT_DEFAULT)

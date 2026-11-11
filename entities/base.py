@@ -26,6 +26,7 @@ class DefensiveBase(GameEntity):
         self.cooldown_length = BASE_COOLDOWN_TIME
         self.rapid_fire = False
         self.is_active = True
+        self.stun_time = 0.0
         self.width = LAUNCHER_WIDTH
         self.height = LAUNCHER_HEIGHT
         
@@ -38,15 +39,25 @@ class DefensiveBase(GameEntity):
 
         Clears the reload (``cooldown_time`` and ``cooldown_ratio`` to 0.0),
         turns rapid fire off (``cooldown_length`` back to
-        ``BASE_COOLDOWN_TIME``) and brings the launcher back online. Position,
-        size and render offsets are left alone. Calling it again changes
-        nothing.
+        ``BASE_COOLDOWN_TIME``), clears any stun (``stun_time`` to 0.0) and
+        brings the launcher back online. Position, size and render offsets
+        are left alone. Calling it again changes nothing.
         """
         self.cooldown_time = 0.0
         self.cooldown_ratio = 0.0
         self.cooldown_length = BASE_COOLDOWN_TIME
         self.rapid_fire = False
         self.is_active = True
+        self.stun_time = 0.0
+
+    def stun(self):
+        """Knock the launcher offline for ``LAUNCHER_STUN_DURATION`` seconds.
+
+        A hit while already stunned restarts the stun at the full duration;
+        it never adds time on top.
+        """
+        self.is_active = False
+        self.stun_time = LAUNCHER_STUN_DURATION
 
     def set_rapid_fire(self, on):
         """Turn the rapid-fire reload on or off.
@@ -76,7 +87,19 @@ class DefensiveBase(GameEntity):
             self.cooldown_time = self.cooldown_length
     
     def update(self, dt):
-        """Update cooldown timer."""
+        """Count down the stun, or the reload once the launcher is online.
+
+        While stunned, ``stun_time`` drops by ``dt`` (clamped at 0.0) and the
+        launcher comes back online in the call where it reaches 0.0. The
+        reload doesn't count down in any call that started stunned, so it
+        carries on from where it stopped once the launcher is back online.
+        """
+        if self.stun_time > 0:
+            self.stun_time = max(0.0, self.stun_time - dt)
+            if self.stun_time == 0.0:
+                self.is_active = True
+            return
+
         if not self.is_active:
             return
         
@@ -136,13 +159,12 @@ class DefensiveBase(GameEntity):
         """Draw the tower body, its barrel in the same colour and the reload bar under it.
 
         While active with rapid fire on, the body and barrel use
-        ``LAUNCHER_RAPID_FIRE_COLOR`` instead of ``active_color``.
+        ``LAUNCHER_RAPID_FIRE_COLOR`` instead of ``active_color``. While
+        offline they use ``inactive_color`` and the body gets a red outline.
         """
         
         if not self.is_active:
             color = inactive_color
-            # Add visual indicator that base is offline
-            pygame.draw.rect(screen, COLOR_RED, self.get_bounds(), 3)
         elif self.rapid_fire:
             color = LAUNCHER_RAPID_FIRE_COLOR
         else:
@@ -151,6 +173,10 @@ class DefensiveBase(GameEntity):
         # Draw main launcher body
         rect = self.get_bounds()
         pygame.draw.rect(screen, color, rect)
+
+        # Add visual indicator that base is offline, on top of the body
+        if not self.is_active:
+            pygame.draw.rect(screen, COLOR_RED, rect, 3)
         
         # Draw the barrel on top of the body
         pygame.draw.rect(screen, color, self.barrel_rect())
