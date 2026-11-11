@@ -8,8 +8,9 @@ enemy explosion and the impact sound, and knocks the launcher offline for
 import pygame
 
 from entities import IncomingMissile
-from game.constants import (GROUND_Y, LAUNCHER_HEIGHT, LAUNCHER_STUN_DURATION,
-                            LAUNCHER_X, STATE_PAUSED, STATE_PLAYING)
+from game.constants import (COLOR_GRAY, COLOR_RED, COOLDOWN_BAR_TRACK_COLOR, GROUND_Y,
+                            LAUNCHER_HEIGHT, LAUNCHER_STUN_DURATION, LAUNCHER_X,
+                            STATE_PAUSED, STATE_PLAYING)
 
 Vector2 = pygame.math.Vector2
 
@@ -164,3 +165,22 @@ def test_hit_leaves_score_and_buildings(main_game):
     assert [(b.health_current, b.is_destroyed) for b in game.buildings] == health
     game.check_game_over()
     assert game.state == STATE_PLAYING
+
+
+def test_stunned_launcher_drawn_grey_with_red_outline(main_game):
+    game = main_game
+    game.base.stun()
+    game.draw()
+    body = game.base.get_bounds()
+    track, fill = game.base.cooldown_bar_rects()
+
+    def px(x, y):
+        return tuple(game.screen.get_at((x, y))[:3])
+
+    assert px(*body.center) == COLOR_GRAY
+    assert px(*game.base.barrel_rect().center) == COLOR_GRAY
+    for x, y in [(body.left + 1, body.centery), (body.right - 2, body.centery),
+                 (body.centerx, body.top + 1), (body.centerx, body.bottom - 2)]:
+        assert px(x, y) == COLOR_RED, (x, y)
+    assert fill.width == 0
+    assert px(track.left + 1, track.centery) == COOLDOWN_BAR_TRACK_COLOR

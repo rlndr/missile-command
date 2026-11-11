@@ -159,13 +159,12 @@ class DefensiveBase(GameEntity):
         """Draw the tower body, its barrel in the same colour and the reload bar under it.
 
         While active with rapid fire on, the body and barrel use
-        ``LAUNCHER_RAPID_FIRE_COLOR`` instead of ``active_color``.
+        ``LAUNCHER_RAPID_FIRE_COLOR`` instead of ``active_color``. While
+        offline they use ``inactive_color`` and the body gets a red outline.
         """
         
         if not self.is_active:
             color = inactive_color
-            # Add visual indicator that base is offline
-            pygame.draw.rect(screen, COLOR_RED, self.get_bounds(), 3)
         elif self.rapid_fire:
             color = LAUNCHER_RAPID_FIRE_COLOR
         else:
@@ -174,6 +173,10 @@ class DefensiveBase(GameEntity):
         # Draw main launcher body
         rect = self.get_bounds()
         pygame.draw.rect(screen, color, rect)
+
+        # Add visual indicator that base is offline, on top of the body
+        if not self.is_active:
+            pygame.draw.rect(screen, COLOR_RED, rect, 3)
         
         # Draw the barrel on top of the body
         pygame.draw.rect(screen, color, self.barrel_rect())
