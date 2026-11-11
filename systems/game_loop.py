@@ -7,6 +7,7 @@ from entities import (IncomingMissile, DefenseMissile, DefensiveBase, Building)
 from entities.terrain import Explosion, ExplosionPool
 from utils.timer import GameTimer
 from systems.input_system import InputSystem
+from systems.collision import CollisionSystem
 from systems.score import ScoreSystem
 from systems.sound import SoundSystem, pre_init_mixer
 
@@ -357,6 +358,21 @@ class MainGame:
                         missile.destroy()
                         impacted = True
                         break
+
+        # Incoming missiles hitting the launcher body stun it
+        for missile in self.incoming_missiles:
+            if missile.is_destroyed:
+                continue
+
+            if CollisionSystem.missile_to_base_collision(missile, self.base):
+                explosion = self.explosion_pool.get_explosion(
+                    missile.position.x,
+                    missile.position.y
+                )
+                self.explosions.append(explosion)
+                missile.destroy()
+                self.base.stun()
+                impacted = True
 
         # Player explosions destroy incoming missiles inside their current radius
         for explosion in self.explosions:
