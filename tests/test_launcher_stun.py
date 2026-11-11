@@ -55,11 +55,23 @@ def test_direct_hit_destroys_missile_and_stuns(main_game, monkeypatch):
     explosion = added[0]
     assert explosion.is_player is False
     assert explosion.is_building is False
+    assert explosion.is_ground is False
     assert explosion.position == missile.position
     assert game.base.is_active is False
     assert game.base.stun_time == LAUNCHER_STUN_DURATION
     assert game.base.can_fire() is False
     assert calls.count("impact") == 1
+
+
+def test_ground_line_inside_tower_stuns_not_ground_blast(main_game):
+    game = main_game
+    missile = park_missile(game, LAUNCHER_X, GROUND_Y)
+    game.check_collisions()
+    assert missile.is_destroyed is True
+    assert game.base.is_active is False
+    assert game.base.stun_time == LAUNCHER_STUN_DURATION
+    assert len(game.explosions) == 1
+    assert game.explosions[0].is_ground is False
 
 
 def test_comes_back_online_after_duration(main_game):
