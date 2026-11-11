@@ -6,7 +6,7 @@ A Python/Pygame recreation of the classic 1980 Atari arcade game. Defend your ci
 
 - Click anywhere on screen to fire a defensive missile toward that point
 - Explosions chain-react and can intercept incoming missiles mid-flight
-- Buildings are damaged only by enemy missile impacts (3 hits destroy one); your own explosions never harm the city
+- The city mixes residential, industrial and military buildings, destroyed by 3, 4 and 5 enemy missile impacts; your own explosions never harm the city, and a damaged building's health bar turns from green to yellow to red
 - Score tracks missile hits and survival time, with high score persistence
 - A wave counter next to the score goes up by one every 30 seconds of play, with a tick-tock sound on each wave change
 - Enemy missiles spawn faster over the first minute, then 10% more often after every further full minute of play
